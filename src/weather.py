@@ -3,8 +3,8 @@ import json
 import requests
 import xmltodict
 
-from pilotmap.src.db import Database
-from pilotmap.src.log import log
+from db  import Database
+from log import log
 
 db = Database()
 

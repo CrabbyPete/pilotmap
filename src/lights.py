@@ -1,9 +1,9 @@
 import time
 
-from pilotmap.src.db import Database
+from db     import Database
 from log    import log
-from pilotmap.src.leds import LedStrip
-from pilotmap.src.config import color
+from leds   import LedStrip
+from config import color
 
 
 db = Database(host='127.0.0.1')

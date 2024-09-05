@@ -11,4 +11,6 @@ cd pilotmap
 source bin/activate
 git clone https://github.com/CrabbyPete/pilotmap.git
 pip3 install -r requirements.txt
+chmod +x setup.sh
+setup.sh
 
