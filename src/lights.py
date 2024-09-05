@@ -53,7 +53,7 @@ def main():
                 strip.set_pixel_color(led, legend[flight_category])
             else:
                 log.info(f"No flight_category for station {station}, led {led}")
-                strip.set_pixel_color(led, legend["INVALID"])
+                strip.set_pixel_color(led, (255,255,255))
 
         time.sleep(60)
 
