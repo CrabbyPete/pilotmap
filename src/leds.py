@@ -35,7 +35,10 @@ try:
             self.number = self.strip.numPixels()
 
         def set_pixel_color(self, led, color):
-            self.strip.setPixelColor(led, color)
+            if isinstance(color, int):
+                self.strip.setPixelColor(led, color)
+            else:
+                self.strip.setPixelColor(led, Color(color))
 
         def clear_pixels(self):
             for led in range(self.number):
