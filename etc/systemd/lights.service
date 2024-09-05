@@ -1,0 +1,9 @@
+[Unit]
+Description=Run the lights
+After=weather.service
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/local/src/lights.py
+
+[Install]
+WantedBy=default.target
