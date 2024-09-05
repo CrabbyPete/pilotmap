@@ -48,13 +48,12 @@ def main():
             if station in ("NONE", "NULL", "LGND", ""):
                 continue
 
-            strip.set_pixel_color(led, 0)
             flight_category = db.get(station, 'flight_category')
             if flight_category:
                 strip.set_pixel_color(led, legend[flight_category])
             else:
                 log.info(f"No flight_category for station {station}, led {led}")
-                strip.set_pixel_color(led, color.black)
+                strip.set_pixel_color(led, legend["INVALID"])
 
         time.sleep(60)
 
