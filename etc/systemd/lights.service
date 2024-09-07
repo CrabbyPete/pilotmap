@@ -3,7 +3,11 @@ Description=Run the lights
 After=weather.service
 
 [Service]
+WorkingDirectory=/usr/local/src
 ExecStart=/home/pi/pilotmap/bin/python3 /usr/local/src/lights.py
+SyslogIdentifier=SRV_LIGHTS
+Restart=always
+RestartSec=30
 
 [Install]
 WantedBy=default.target

@@ -7,6 +7,15 @@ class Database(object):
     def __init__(self, host="127.0.0.1", port=6379, db=0):
         self.rdb = redis.Redis( host, port, db)
 
+    def set_values(self,values):
+        """ Set one key value
+        :param key:
+        :param value: dict: set of key value pairs
+        :return:
+        """
+        for key,val in values:
+            self.rdb.sadd(key,val)
+
     def get( self, station, key):
         """ Get all key values in the database for this key
         @param str station: The network id where the original request came from

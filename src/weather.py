@@ -6,7 +6,7 @@ import xmltodict
 from db  import Database
 from log import log
 
-db = Database()
+rdb = Database()
 
 
 def get_metars():
@@ -121,8 +121,8 @@ def main():
 
         # Store the data you want in to the database
         try:
-            db.put(station, station_data)
-            db.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
+            rdb.put(station, station_data)
+            rdb.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} for station {station} in the db")
 
