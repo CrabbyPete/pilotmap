@@ -16,6 +16,10 @@ class Database(object):
         for key,val in values:
             self.rdb.sadd(key,val)
 
+    def get_values(self, key):
+        return self.rdb.smembers(key)
+
+
     def get( self, station, key):
         """ Get all key values in the database for this key
         @param str station: The network id where the original request came from
