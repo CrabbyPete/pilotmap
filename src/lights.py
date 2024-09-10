@@ -49,7 +49,7 @@ def main():
 
     while True:
         # Check if the lights are off
-        if not rdb.get_value('lights'):
+        if not rdb.get('lights'):
             strip.clear_pixels()
             time.sleep(30)
             continue
