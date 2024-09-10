@@ -3,7 +3,6 @@ import random
 
 
 # LED strip configuration:
-LED_COUNT      = 60        # Number of LED pixels.
 LED_PIN        = 18          # GPIO pin connected to the pixels (18 uses PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 10          # DMA channel to use for generating signal (try 10)
@@ -23,13 +22,13 @@ try:
     from rpi_ws281x import PixelStrip, Color
 
     class LedStrip:
-        def __init__(self):
-            self.strip = PixelStrip(LED_COUNT,
+        def __init__(self, count, brightness=LED_BRIGHTNESS):
+            self.strip = PixelStrip(count,
                                     LED_PIN,
                                     LED_FREQ_HZ,
                                     LED_DMA,
                                     LED_INVERT,
-                                    LED_BRIGHTNESS,
+                                    brightness,
                                     LED_CHANNEL)
             self.strip.begin()
             self.number = self.strip.numPixels()

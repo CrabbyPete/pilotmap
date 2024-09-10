@@ -15,7 +15,7 @@ def main():
     Main program to manage the lights
     :return:
     """
-    with open('airports') as fyle:
+    with open('src/airports') as fyle:
         station_ids = fyle.read().split('\n')
 
     legend = {"VFR":None,

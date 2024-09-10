@@ -11,7 +11,7 @@ rdb = Database()
 
 def get_metars():
     """ Get the daily metars file from the FAA weather site
-    :return:
+    :return: dict: metars data
     """
 
     files = ['metars.cache.xml.gz']   # ['tafs.cache.xml.gz'] #
@@ -50,6 +50,7 @@ def get_metars():
 
         return index
 
+
 def get_airport(station):
     """ Get the name of the airport
     :param station:
@@ -64,15 +65,14 @@ def get_airport(station):
             if isinstance(data, list):
                 return data[0]
         except Exception as e:
-            pass
-            #log.error(f"Error {e} translating json:{data}")
+            log.error(f"Error {e} translating json:{data}")
     return {}
 
 
 def get_station(station):
     """ Get info for a particular station
     :param station:
-    :return:
+    :return: dict: metars data
     """
     url = f"https://aviationweather.gov/api/data/metar?ids={station}&format=xml&hours=3"
     reply = requests.get(url)
@@ -93,7 +93,7 @@ def main():
     """
 
     # Open the aiport file, each line represents an LED on the board
-    with open('airports') as fyle:
+    with open('src/airports') as fyle:
         station_ids = fyle.read().split('\n')
 
     # Get the latest METAR data from the API
@@ -101,9 +101,9 @@ def main():
 
     # Set the LEDs for each value
     for led, station in enumerate(station_ids):
-        airport = get_airport(station)
         if station in ("NULL", "LGND", ""):
             continue
+        airport = get_airport(station)
 
         try:
             station_data = metar_data[station]

@@ -21,6 +21,7 @@ def parse(line):
         return command
 
 
+
 @app.post("/run/{command}")
 def run(command,response: Response):
     """ Run commands to the server eg "near Montauk, NY 20 mile on"
@@ -29,7 +30,6 @@ def run(command,response: Response):
     """
     args = command.split()
     if not args[0] in ('near',              # Light stations nearby
-                        'around',            # Light stations within a radius
                         'home',              # Change color and name of home station
                         'station',           # Change lights for a station
                         'only',              # Only show stations with a particular status eg. VFR
@@ -39,21 +39,20 @@ def run(command,response: Response):
                 ):
         response.status_code = HTTP_404_NOT_FOUND
         return {"detail": "Command not found"}
-    if args[0] == 'near':              # Light stations nearby
+
+    if args[0] == 'near':               # Light stations nearby
         pass
-    if args[0] =='around':              # Light stations within a radius
+    elif args[0] == 'home':              # Change color and name of home station
         pass
-    elif args[0] =='home':              # Change color and name of home station
+    elif args[0] == 'station':           # Change lights for a station
         pass
-    elif args[0] =='station':           # Change lights for a station
+    elif args[0] == 'only':              # Only show stations with a particular status eg. VFR
         pass
-    elif args[0] =='only':              # Only show stations with a particular status eg. VFR
+    elif args[0] == 'lights':            # Turn lights off or on based on time,
         pass
-    elif args[0] =='lights':            # Turn lights off or on based on time,
+    elif args[0] == 'dim':               # Dim the lights to a value
         pass
-    elif args[0] =='dim':               # Dim the lights to a value
-        pass
-    elif args[0] =='blink':             # Blink
+    elif args[0] == 'blink':             # Blink
         pass
 
 
