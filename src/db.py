@@ -20,6 +20,13 @@ class Database(object):
         return self.rdb.smembers(key)
 
 
+    def getall(self, station):
+        data = self.rdb.hgetall(station)
+        decoded = {}
+        for k,v in data.items():
+            decoded[k.decode()] = v.decode()
+        return decoded
+
     def get( self, station, key):
         """ Get all key values in the database for this key
         @param str station: The network id where the original request came from
@@ -68,27 +75,4 @@ class Database(object):
         """
         return self.rdb.geoadd(key,point)
 
-if __name__ == "__main__":
-    """ Command line tool to view what's in the local redis cache """
-    import json
-    import argparse
 
-    cache = Database(dict(host= 'localhost', port=6379, db=0))
-
-    """"
-    args = argparse.ArgumentParser()
-    args.add_argument('-n'   ,dest = 'station'     , action="store",                     help = 'Source network id')
-
-    args = args.parse_args()
-    network = args.network
-    results = None
-    
-    while True:
-
-        line = input(">")
-        if line == 'quit':
-            break
-
-        value = cache.get(network, line )
-        print ( json.dumps( value, indent=2, sort_keys=True ) )
-    """

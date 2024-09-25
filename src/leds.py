@@ -10,14 +10,6 @@ LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False    # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL     = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
-'''
-def Color(r, g, b):
-    """
-    The code has Color all over, but never defined. It just returns a set to pass back to the
-    Adafruit library calls
-    """
-    return int("0x{:02x}{:02x}{:02x}".format(r, g, b), 16)
-'''
 try:
     from rpi_ws281x import PixelStrip, Color
 

@@ -3,8 +3,9 @@ import json
 import requests
 import xmltodict
 
-from db  import Database
-from log import log
+from db             import Database
+from log            import log
+from timezonefinder import TimezoneFinder
 
 rdb = Database()
 
@@ -14,18 +15,20 @@ def get_metars():
     :return: dict: metars data
     """
 
-    files = ['metars.cache.xml.gz']   # ['tafs.cache.xml.gz'] #
+    files = ['metars.cache.xml.gz', 'tafs.cache.xml.gz']
     url = "https://aviationweather.gov/data/cache/{}"
-    for faa_file in files:
+    index = {}
+
+    for number, faa_file in enumerate(files):
         try:
             reply = requests.get(url.format(faa_file), stream=True)
         except Exception as e:
             log.error(f"Exception:{e} opening url {url}")
-            return None
+            continue
 
         if not reply.ok:
             log.error(f"Error getting metar file {faa_file}:{reply.reason}")
-            return None
+            continue
 
         try:
             with open(faa_file, '+wb') as fyle:
@@ -34,21 +37,30 @@ def get_metars():
 
         except Exception as e:
             log.error(f"Error downloading metar file {faa_file}:{e}")
-            return None
+            continue
 
         try:
             with gzip.open(faa_file, mode='rb') as fyle:
                 xml_data = fyle.read()
         except Exception as e:
             log.error(f"Error unzipping metar file {faa_file}:{e}")
+            continue
 
         metars = xmltodict.parse(xml_data)
-        metars = metars.get('response').get('data').get('METAR')
-        index = {}
-        for metar in metars:
-            index[metar['station_id']] = metar
 
-        return index
+        if number == 0:
+            metars = metars.get('response').get('data').get('METAR')
+
+            for metar in metars:
+                index[metar['station_id']] = metar
+        else:
+            tafs = metars.get('response').get('data').get('TAF')
+            for taf in tafs:
+                if 'wx_string' in taf:
+                    index[taf['station_id']]['wx_string'] = taf['wx_string']
+
+
+    return index
 
 
 def get_airport(station):
@@ -65,7 +77,7 @@ def get_airport(station):
             if isinstance(data, list):
                 return data[0]
         except Exception as e:
-            log.error(f"Error {e} translating json:{data}")
+            log.error(f"Error {e} translating json:{reply.text}")
     return {}
 
 
@@ -91,6 +103,7 @@ def main():
     Main routine. Schedule to run every 15 minutes
     :return: None
     """
+    tf = TimezoneFinder()
 
     # Open the aiport file, each line represents an LED on the board
     with open('src/airports') as fyle:
@@ -111,13 +124,21 @@ def main():
                 station_data['name'] = airport.get('name')
 
             station_data["led"] = led
-        except KeyError as e:
+        except KeyError:
             station_data = get_station(station)
             if not station_data:
                 log.error(f"Station {station} not in metar data")
                 continue
             if isinstance(station_data, list):
                 station_data = station_data[0]
+
+        # Get the timezone
+        lng = station_data.get('longitude')
+        lat = station_data.get('latitude')
+        if lat and lng:
+            timezone = tf.timezone_at(lng=float(lng), lat=float(lat))
+            if timezone:
+                station_data['timezone'] = timezone
 
         # Store the data you want in to the database
         try:
