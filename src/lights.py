@@ -14,6 +14,22 @@ rdb = Database(host='127.0.0.1')
 strip = LedStrip(183)
 strip.clear_pixels()
 
+def dim(data,value):
+    red = data[0] - ((value * data[0])/100)
+    if red < 0:
+        red = 0
+
+    grn = data[1] - ((value * data[1])/100)
+    if grn < 0:
+        grn = 0
+
+    blu = data[2] - ((value * data[2])/100)
+    if blu < 0:
+        blu = 0
+
+    data =[red,grn,blu]
+    return data
+
 def brighten(led:tuple, value:int):
     """ Change the brightness of an individual LED
     :param leds: 3 color set of rgb to work with
@@ -23,12 +39,23 @@ def brighten(led:tuple, value:int):
     ratio = abs(value)/100.
     if value < 0:
         r = led[0] - led[0] * ratio
+        r = 0 if r < 0 else r
+
         g = led[1] - led[1] * ratio
+        g = 0 if g < 0 else g
+
         b = led[2] - led[2] * ratio
+        b = 0 if b < 0 else b
+
     else:
         r = led[0] + led[0] * ratio
+        r = 255 if r > 255 else r
+
         g = led[1] + led[1] * ratio
+        g = 255 if r > 255 else g
+
         b = led[2] + led[2] * ratio
+        b = 255 if b > 255 else b
 
     return (r, b, g)
 
@@ -78,6 +105,7 @@ def main():
             #rdb.set_values('lights',)
             legend_index += 1
 
+    # Loop forever to light each LED
     while True:
         # Check the status of the stations by color
         for led, station in enumerate(station_ids):
@@ -106,13 +134,12 @@ def main():
                         sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
                         sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
                         if sun_rise > now.datetime < sun_set:
-                            brighten(led_color, -25)
-
+                            brighten(led_color, -50)
                     except UnknownTimeZoneError:
                         pass
+
             strip.set_pixel_color(led, led_color)
 
-        strip.set_brightness(100)
         while True:
             strip.show_pixels()
 
@@ -124,8 +151,8 @@ def main():
                 saved_color = [(led, strip.get_pixel(led))  for led in rdb.get_values('blink')]
             except Exception as e:
                 log.error(e)
-                continue
-                
+                break
+
             for led in rdb.get_values('blink'):
                 if strip.get_pixel(led):
                     strip.set_pixel_color(led, 0)
@@ -135,6 +162,9 @@ def main():
             sleep += 5
             if sleep > 30:
                 break
+            log.info("stop blink")
+
+        time.sleep(60)
 
 
 if __name__ == "__main__":
