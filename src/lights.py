@@ -11,7 +11,7 @@ from suntime    import Sun
 
 
 rdb = Database(host='127.0.0.1')
-strip = LedStrip()
+strip = LedStrip(183)
 
 def brighten(led:tuple, value:int):
     """ Change the brightness of an individual LED
@@ -43,7 +43,7 @@ def main():
     Main program to manage the lights
     :return:
     """
-    with open('src/airports') as fyle:
+    with open('airports') as fyle:
         station_ids = fyle.read().split('\n')
 
     legend = {"VFR":None,
