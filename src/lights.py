@@ -12,6 +12,7 @@ from suntime    import Sun
 
 rdb = Database(host='127.0.0.1')
 strip = LedStrip(183)
+strip.clear_pixels()
 
 def brighten(led:tuple, value:int):
     """ Change the brightness of an individual LED
