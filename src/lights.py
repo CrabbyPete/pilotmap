@@ -110,7 +110,6 @@ def main():
 
                     except UnknownTimeZoneError:
                         pass
-
             strip.set_pixel_color(led, led_color)
 
         strip.set_brightness(100)
@@ -121,7 +120,12 @@ def main():
             sleep = 0
 
             # Save the current color for each blinking led
-            saved_color = [(led, strip.get_pixel(led))  for led in rdb.get_values('blink')]
+            try:
+                saved_color = [(led, strip.get_pixel(led))  for led in rdb.get_values('blink')]
+            except Exception as e:
+                log.error(e)
+                continue
+                
             for led in rdb.get_values('blink'):
                 if strip.get_pixel(led):
                     strip.set_pixel_color(led, 0)
