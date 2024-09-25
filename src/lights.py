@@ -112,7 +112,8 @@ def main():
                         pass
 
             strip.set_pixel_color(led, led_color)
-        
+
+        strip.set_brightness(100)
         while True:
             strip.show_pixels()
 
