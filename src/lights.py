@@ -112,8 +112,10 @@ def main():
                         pass
 
             strip.set_pixel_color(led, led_color)
-
+        
         while True:
+            strip.show_pixels()
+
             # Don't change any other led for 30 seconds as we check which to blink
             sleep = 0
 
