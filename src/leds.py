@@ -1,6 +1,8 @@
 import time
 import random
 
+from log import log
+
 
 # LED strip configuration:
 LED_PIN        = 18          # GPIO pin connected to the pixels (18 uses PWM!).
@@ -63,6 +65,7 @@ try:
             self.show_pixels()
 
 except ModuleNotFoundError as e:
+    log.error(f"Error:{e} loading module rpi_ws281x")
     class LedStrip:
         def __init__(self):
             self.strip = []
