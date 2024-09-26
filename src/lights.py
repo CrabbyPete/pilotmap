@@ -114,6 +114,11 @@ def main():
 
             station_data = rdb.getall(station)
             flight_category = station_data.get('flight_category')
+            if flight_category:
+                led_color = legend[flight_category]
+            else:
+                led_color = color.nowx
+            '''    
             wx_string = station_data.get('wx_string')
             if wx_string:
                 wx_condition = get_condition(wx_string.split())
@@ -122,7 +127,7 @@ def main():
                 led_color = legend[flight_category]
             else:
                 led_color = color.nowx
-
+            '''
             lng = station_data.get('longitude')
             lat = station_data.get('latitude')
             if lat and lng:
@@ -137,7 +142,7 @@ def main():
                             led_color = brighten(led_color, -50)
                     except UnknownTimeZoneError:
                         pass
-
+            print(led, led_color)
             strip.set_pixel_color(led, led_color)
 
         while True:
