@@ -48,7 +48,7 @@ try:
             self.strip.setBrightness(LED_BRIGHTNESS)
 
         def get_pixel(self, led):
-            return self.getPixelColor(led)
+            return self.strip.getPixelColor(led)
 
         def rainbow(self, times,delay):
             for _ in range(times):
