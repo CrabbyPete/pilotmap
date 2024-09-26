@@ -161,9 +161,9 @@ def main():
                     strip.set_pixel_color(led, saved_colors[index])
                 else:
                     strip.set_pixel_color(led, 0)
- 
-            time.sleep(5)
-            sleep += 5
+
+            time.sleep(1)
+            sleep += 1
             if sleep > 30:
                 break
 
