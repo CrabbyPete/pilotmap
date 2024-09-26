@@ -107,6 +107,7 @@ def main():
 
     # Loop forever to light each LED
     while True:
+        log.info("loop")
         # Check the status of the stations by color
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):
@@ -130,19 +131,23 @@ def main():
             '''
             lng = station_data.get('longitude')
             lat = station_data.get('latitude')
-            if lat and lng:
-                tz = station_data.get('timezone')
-                if tz:
-                    now = arrow.now(tz)
-                    sun = Sun(float(lat),float(lng))
-                    try:
-                        sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
-                        sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
-                        if now.datetime > sun_set or now.datetime < sun_rise:
-                            led_color = brighten(led_color, -75)
-                    except UnknownTimeZoneError:
-                        pass
-            print(led, led_color)
+            tz = station_data.get('timezone')
+            if lat and lng and tz:
+                now = arrow.now(tz)
+                sun = Sun(float(lat),float(lng))
+                try:
+                    sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
+                    sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
+                    if now.datetime > sun_set or now.datetime < sun_rise:
+                        led_color = brighten(led_color, -75)
+                    else:
+                        led_color = brighten(led_color, -50)
+
+                except UnknownTimeZoneError:
+                    pass
+            else:
+                led_color = brighten(led_color, -50)
+
             strip.set_pixel_color(led, led_color)
 
         while True:
