@@ -1,13 +1,14 @@
 import time
 import arrow
 
+from pytz       import timezone, UnknownTimeZoneError
+from suntime    import Sun
 
 from db         import Database
 from log        import log
-from pytz       import timezone, UnknownTimeZoneError
 from leds       import LedStrip
 from config     import color, conditions
-from suntime    import Sun
+from airports   import get_airports
 
 
 rdb = Database(host='127.0.0.1')
@@ -71,8 +72,7 @@ def main():
     Main program to manage the lights
     :return:
     """
-    with open('airports') as fyle:
-        station_ids = fyle.read().split('\n')
+    station_ids = get_airports()
 
     legend = {"VFR":None,
               "MVFR":None,
@@ -107,7 +107,9 @@ def main():
 
     # Loop forever to light each LED
     while True:
+        blink = []
         log.info("loop")
+
         # Check the status of the stations by color
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):
@@ -119,16 +121,13 @@ def main():
                 led_color = legend[flight_category]
             else:
                 led_color = color.nowx
-            '''    
+
             wx_string = station_data.get('wx_string')
             if wx_string:
                 wx_condition = get_condition(wx_string.split())
                 led_color = color.dict(wx_condition)
-            elif flight_category:
-                led_color = legend[flight_category]
-            else:
-                led_color = color.nowx
-            '''
+                blink.append(led)
+
             lng = station_data.get('longitude')
             lat = station_data.get('latitude')
             tz = station_data.get('timezone')
@@ -163,18 +162,19 @@ def main():
                 log.error(e)
                 break
 
-            for led in rdb.get_values('blink'):
+            for led in blink:
                 if strip.get_pixel(led):
                     strip.set_pixel_color(led, 0)
                 else:
                     strip.set_pixel_color(led, saved_color[led])
+
             time.sleep(5)
             sleep += 5
             if sleep > 30:
                 break
+
             log.info("stop blink")
 
-        time.sleep(60)
 
 
 if __name__ == "__main__":

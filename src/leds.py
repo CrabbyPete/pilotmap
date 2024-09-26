@@ -67,7 +67,7 @@ try:
 except ModuleNotFoundError as e:
     log.error(f"Error:{e} loading module rpi_ws281x")
     class LedStrip:
-        def __init__(self):
+        def __init__(self, *args):
             self.strip = []
             self.number = 100
 

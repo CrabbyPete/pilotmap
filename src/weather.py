@@ -3,9 +3,12 @@ import json
 import requests
 import xmltodict
 
+from timezonefinder import TimezoneFinder
+
 from db             import Database
 from log            import log
-from timezonefinder import TimezoneFinder
+from airports       import get_airports, get_airport
+
 
 rdb = Database()
 
@@ -62,7 +65,7 @@ def get_metars():
 
     return index
 
-
+'''
 def get_airport(station):
     """ Get the name of the airport
     :param station:
@@ -79,7 +82,7 @@ def get_airport(station):
         except Exception as e:
             log.error(f"Error {e} translating json:{reply.text}")
     return {}
-
+'''
 
 def get_station(station):
     """ Get info for a particular station
@@ -106,8 +109,7 @@ def main():
     tf = TimezoneFinder()
 
     # Open the aiport file, each line represents an LED on the board
-    with open('src/airports') as fyle:
-        station_ids = fyle.read().split('\n')
+    station_ids = get_airports()
 
     # Get the latest METAR data from the API
     metar_data = get_metars()

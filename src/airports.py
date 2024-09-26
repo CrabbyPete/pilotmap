@@ -49,5 +49,11 @@ def get_airport(station):
     return {}
 
 
+def get_airports(file_name='src/airports'):
+    with open(file_name) as fyle:
+        station_ids = fyle.read().split('\n')
+    return station_ids
+
+
 if __name__ == '__main__':
       apinfo = get_apinfo({})

@@ -1,7 +1,10 @@
+import settings
+
 from flask import Flask, Response, request, render_template
 
 from db         import Database
 from log        import log
+from config     import color
 from airports   import get_apinfo
 
 rdb = Database(host='127.0.0.1')
@@ -9,6 +12,15 @@ rdb = Database(host='127.0.0.1')
 app = Flask(__name__)
 app.secret_key = 'ewi90r209fu'
 
+@app.context_processor
+def utility_processor():
+    def rgbhex(value:tuple):
+        return '#%02x%02x%02x' % (value[0], value[1], value[2])
+    '''
+    def format_price(amount, currency=u'$'):
+        return u'{1}{0:.2f}'.format(amount, currency)
+    '''
+    return dict(rgbhex=rgbhex)
 
 def parse(line):
     """ Parse commands
@@ -59,10 +71,21 @@ def configuration():
     if request.method == "GET":
         context = {
             'title': 'Airports Editor',
-            'num': 0
-
+            'num': 0,
+            'color':color,
+            'settings': settings,
+            # 'ipadd': ipadd,
+            'ipaddresses': '',
+            'timestr': '',
+            'num': 0,
+            'current_timezone': '',
+            'update_available': False,
+            'update_vers': False,
+            'machines':[],
+            'map_name':'fred',
         }
-        return render_template('apedit.html', **context)
+        return render_template('confedit.html', **context)
+
 
 
 @app.route('/apedit', methods=["GET", "POST"])
