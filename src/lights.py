@@ -157,16 +157,16 @@ def main():
 
             # Save the current color for each blinking led
             try:
-                saved_color = [strip.get_pixel(led) for led in blink]
+                saved_colors = [strip.get_pixel(led) for led in blink]
             except Exception as e:
                 log.error(e)
                 break
 
-            for led in blink:
+            for index, led in enumerate(blink):
                 if strip.get_pixel(led):
                     strip.set_pixel_color(led, 0)
                 else:
-                    strip.set_pixel_color(led, saved_color[led])
+                    strip.set_pixel_color(led, saved_colors[index])
 
             time.sleep(5)
             sleep += 5
