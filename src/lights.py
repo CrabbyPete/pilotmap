@@ -157,7 +157,7 @@ def main():
 
             # Save the current color for each blinking led
             try:
-                saved_color = [(led, strip.get_pixel(led))  for led in rdb.get_values('blink')]
+                saved_color = [strip.get_pixel(led) for led in blink]
             except Exception as e:
                 log.error(e)
                 break
