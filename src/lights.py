@@ -38,26 +38,26 @@ def brighten(led:tuple, value:int):
     """
     ratio = abs(value)/100.
     if value < 0:
-        r = led[0] - int(led[0] * ratio)
-        r = 0 if r < 0 else r
+        red = led[0] - int(led[0] * ratio)
+        red = 0 if red < 0 else red
 
-        g = led[1] - int(led[1] * ratio)
-        g = 0 if g < 0 else g
+        green = led[1] - int(led[1] * ratio)
+        green = 0 if green < 0 else green
 
-        b = led[2] - int(led[2] * ratio)
-        b = 0 if b < 0 else b
+        blue = led[2] - int(led[2] * ratio)
+        blue = 0 if blue < 0 else blue
 
     else:
-        r = led[0] + int(led[0] * ratio)
-        r = 255 if r > 255 else r
+        red = led[0] + int(led[0] * ratio)
+        red = 255 if red > 255 else red
 
-        g = led[1] + int(led[1] * ratio)
-        g = 255 if r > 255 else g
+        green = led[1] + int(led[1] * ratio)
+        green = 255 if green > 255 else green
 
-        b = led[2] + int(led[2] * ratio)
-        b = 255 if b > 255 else b
+        blue = led[2] + int(led[2] * ratio)
+        blue = 255 if blue > 255 else blue
 
-    return (r, b, g)
+    return red, green, blue
 
 def get_condition(wx_list:list):
     for wx in wx_list:
