@@ -139,7 +139,7 @@ def main():
                         sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
                         sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
                         if now.datetime > sun_set or now.datetime < sun_rise:
-                            led_color = brighten(led_color, -50)
+                            led_color = brighten(led_color, -75)
                     except UnknownTimeZoneError:
                         pass
             print(led, led_color)
