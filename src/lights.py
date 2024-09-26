@@ -149,25 +149,19 @@ def main():
 
             strip.set_pixel_color(led, led_color)
 
+        saved_colors = [strip.get_pixel(led) for led in blink]
         while True:
             strip.show_pixels()
 
             # Don't change any other led for 30 seconds as we check which to blink
             sleep = 0
 
-            # Save the current color for each blinking led
-            try:
-                saved_colors = [strip.get_pixel(led) for led in blink]
-            except Exception as e:
-                log.error(e)
-                break
-
             for index, led in enumerate(blink):
-                if strip.get_pixel(led):
-                    strip.set_pixel_color(led, 0)
-                else:
+                if strip.get_pixel(led) == 0:
                     strip.set_pixel_color(led, saved_colors[index])
-
+                else:
+                    strip.set_pixel_color(led, 0)
+ 
             time.sleep(5)
             sleep += 5
             if sleep > 30:
