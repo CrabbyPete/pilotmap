@@ -38,23 +38,23 @@ def brighten(led:tuple, value:int):
     """
     ratio = abs(value)/100.
     if value < 0:
-        r = led[0] - led[0] * ratio
+        r = led[0] - int(led[0] * ratio)
         r = 0 if r < 0 else r
 
-        g = led[1] - led[1] * ratio
+        g = led[1] - int(led[1] * ratio)
         g = 0 if g < 0 else g
 
-        b = led[2] - led[2] * ratio
+        b = led[2] - int(led[2] * ratio)
         b = 0 if b < 0 else b
 
     else:
-        r = led[0] + led[0] * ratio
+        r = led[0] + int(led[0] * ratio)
         r = 255 if r > 255 else r
 
-        g = led[1] + led[1] * ratio
+        g = led[1] + int(led[1] * ratio)
         g = 255 if r > 255 else g
 
-        b = led[2] + led[2] * ratio
+        b = led[2] + int(led[2] * ratio)
         b = 255 if b > 255 else b
 
     return (r, b, g)
@@ -133,7 +133,7 @@ def main():
                     try:
                         sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
                         sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
-                        if sun_rise > now.datetime < sun_set:
+                        if now.datetime > sun_set or now.datetime < sun_rise:
                             led_color = brighten(led_color, -50)
                     except UnknownTimeZoneError:
                         pass
