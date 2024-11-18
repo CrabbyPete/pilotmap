@@ -33,11 +33,13 @@ def parse(line):
 
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def landing():
     """ Landing page
     """
     context = {'title': 'LiveSectional Home', 'num': 0}
     return render_template('index.html', **context)
+
 
 @app.route("/ledonoff", methods=["POST"])
 def ledonoff():

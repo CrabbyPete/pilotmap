@@ -67,12 +67,12 @@ def get_condition(wx_list:list):
                 return condition
 
 
-def main():
+def main(file_name):
     """
     Main program to manage the lights
     :return:
     """
-    station_ids = get_airports()
+    station_ids = get_airports(file_name)
 
     legend = {"VFR":None,
               "MVFR":None,
@@ -162,14 +162,19 @@ def main():
                 else:
                     strip.set_pixel_color(led, 0)
 
-            time.sleep(1)
-            sleep += 1
-            if sleep > 30:
+            time.sleep(.5)
+            sleep += .5
+            if sleep > 30.:
                 break
 
             log.info("stop blink")
 
 
-
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description ='Get weather for airports')
+    parser.add_argument('file', nargs='?')
+    args = parser.parse_args()
+    if not args.file:
+        airport_file = 'src/airports'
+    main(args.file)

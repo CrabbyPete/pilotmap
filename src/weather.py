@@ -101,7 +101,7 @@ def get_station(station):
         return metars
 
 
-def main():
+def main(file_name=None):
     """
     Main routine. Schedule to run every 15 minutes
     :return: None
@@ -109,7 +109,7 @@ def main():
     tf = TimezoneFinder()
 
     # Open the aiport file, each line represents an LED on the board
-    station_ids = get_airports()
+    station_ids = get_airports(file_name)
 
     # Get the latest METAR data from the API
     metar_data = get_metars()
@@ -126,15 +126,17 @@ def main():
                 station_data['name'] = airport.get('name')
 
             station_data["led"] = led
+
         except KeyError:
             station_data = get_station(station)
             if not station_data:
                 log.error(f"Station {station} not in metar data")
                 continue
+
             if isinstance(station_data, list):
                 station_data = station_data[0]
 
-        # Get the timezone
+        # Get the timezone for the longitude and latitude
         lng = station_data.get('longitude')
         lat = station_data.get('latitude')
         if lat and lng:
@@ -151,4 +153,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description ='Get weather for airports')
+    parser.add_argument('file', nargs='?')
+    args = parser.parse_args()
+    if not args.file:
+        airport_file = 'src/airports'
+    main(args.file)
