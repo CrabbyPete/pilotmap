@@ -35,7 +35,7 @@ fontsize = 24
 
 boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
 regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
-arrows   = ImageFont.misc('Arrows.ttf', fontsize, 0)
+arrows   = ImageFont.truetype('Arrows.ttf', fontsize, 0)
 
 
 class Display:
