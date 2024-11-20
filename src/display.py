@@ -45,22 +45,22 @@ def winddir(wndir=0):
     :param wndir: wind direction in degrees
     :return: char representation of an arrow
     """
-    if (338 <= wndir <= 360) or (1 <= wndir <= 22): #8 arrows representing 45 degrees each around the compass.
-        return 'd'                              #wind blowing from the north (pointing down)
+    if (338 <= wndir <= 360) or (1 <= wndir <= 22):
+        return 'd'                              # wind blowing from the north (pointing down)
     elif 23 <= wndir <= 67:
-        return 'f'                              #wind blowing from the north-east (pointing lower-left)
+        return 'f'                              # wind blowing from the north-east (pointing lower-left)
     elif 68 <= wndir <= 113:
-        return 'b'                              #wind blowing from the east (pointing left)
+        return 'b'                              # wind blowing from the east (pointing left)
     elif 114 <= wndir <= 159:
-        return 'e'                              #wind blowing from the south-east (pointing upper-left)
+        return 'e'                              # wind blowing from the south-east (pointing upper-left)
     elif 160 <= wndir <= 205:
-        return 'c'                              #wind blowing from the south (pointing up)
+        return 'c'                              # wind blowing from the south (pointing up)
     elif 206 <= wndir <= 251:
-        return 'g'                              #wind blowing from the south-west (pointing upper-right)
+        return 'g'                              # wind blowing from the south-west (pointing upper-right)
     elif 252 <= wndir <= 297:
-        return 'a'                              #wind blowing from the west (pointing right)
+        return 'a'                              # wind blowing from the west (pointing right)
     elif 298 <= wndir <= 337:
-        return 'h'                              #wind blowing from the north-west (pointing lower-right)
+        return 'h'                              # wind blowing from the north-west (pointing lower-right)
     else:
         return ''
 
@@ -77,7 +77,8 @@ class Display:
         self.current_channel = channel
         tca.writeRaw8(1 << self.current_channel)
 
-    def dim(self, level=0):                         #Dimming routine. 0 = Full Brightness, 1 = low brightness, 2 = medium brightness. See https://www.youtube.com/watch?v=hFpXfSnDNSY a$
+    def dim(self):                                  #Dimming routine. 0 = Full Brightness, 1 = low brightness, 2 = medium brightness. See https://www.youtube.com/watch?v=hFpXfSnDNSY a$
+        level = GPIO.input(4)                       # Set dimming level
         if level == 0:                              #https://github.com/adafruit/Adafruit_Python_SSD1306/blob/master/Adafruit_SSD1306/SSD1306.py for more info.
             disp.command(0x81)                      #SSD1306_SETCONTRAST = 0x81
             disp.command(255)
@@ -92,7 +93,12 @@ class Display:
             disp.command(0xDB)                      #SSD1306_SETVCOMDETECT = 0xDB
             disp.command(50)
 
-    def invert(self, white=False):                  #Invert display pixels. Normal = white text on black background.
+    def invert(self, white=False):
+        """
+        Invert display pixels. Normal = white text on black background.
+        :param white:
+        :return:
+        """
         if white:                                   #Inverted = black text on white background #0 = Normal, 1 = Inverted
             disp.command(0xA7)
         else:
@@ -106,10 +112,21 @@ class Display:
         disp.command(0xC0)
 
     def clear(self):
+        """
+        Clear a display
+        :return:
+        """
         self.select(self.current_channel)
         disp.clear()
 
-    def wind(self, ch, wind):                        # Center text vertically and horizontally
+    def wind(self, ch, wind):
+        """
+        Display wind info on a display
+        :param ch: which display
+        :param wind: dict: wind info
+        :return:
+        """
+        # Center text vertically and horizontally
         if ch >= displays:
             return
 
@@ -120,7 +137,7 @@ class Display:
         disp.clear()
         disp.display()
 
-        self.dim(0)                                     # Set brightness, 0=Full bright, 1=medium bright, 2=low bright
+        self.dim()                                     # Set brightness, 0=Full bright, 1=medium bright, 2=low bright
         draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1)
         x1, y1, x2, y2 = 0, 0, width, height            # Create boundaries of display
 
@@ -152,19 +169,21 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
-    winds = []
-    for station in station_ids:
-        if station == "LGND":
-            continue
-        station_data = rdb.getall(station)
-        wind_speed = int(station_data.get('wind_speed_kt',0))
-        wind_gusts = station_data.get('wind_gust_kt',0)
-        wind_dir   = station_data.get('wind_dir_degrees')
-        winds.append({'station':station, 'speed':wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
 
-    winds = sorted(winds, key=lambda x:x['speed'], reverse=True)
-    for number, wind in enumerate(winds):
-        oleds.wind(number,wind)
+    while True:
+        winds = []
+        for station in station_ids:
+            if station == "LGND":
+                continue
+            station_data = rdb.getall(station)
+            wind_speed = int(station_data.get('wind_speed_kt',0))
+            wind_gusts = station_data.get('wind_gust_kt',0)
+            wind_dir   = station_data.get('wind_dir_degrees')
+            winds.append({'station':station, 'speed':wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
+
+        winds = sorted(winds, key=lambda x:x['speed'], reverse=True)
+        for number, wind in enumerate(winds):
+            oleds.wind(number,wind)
 
 
 if __name__ == "__main__":
