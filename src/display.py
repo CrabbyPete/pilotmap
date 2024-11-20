@@ -1,3 +1,4 @@
+import time
 import Adafruit_SSD1306
 import RPi.GPIO as GPIO
 
@@ -192,6 +193,8 @@ def main(file_name):
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
             oleds.wind(number, wind)
+
+        time.sleep(60*7)
 
 
 if __name__ == "__main__":
