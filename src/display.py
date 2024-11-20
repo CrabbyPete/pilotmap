@@ -112,13 +112,12 @@ class Display:
         disp.display()
 
     def oled(self, ch, wind):                        # Center text vertically and horizontally
-
-
         if ch > displays:
             return
 
         offset = 3
         self.select(ch)
+
         disp.begin()
         disp.clear()
         disp.display()
@@ -143,8 +142,7 @@ class Display:
 
 
 
-
-
 if __name__ == "__main__":
-    main()
+    ch = 1
+    wind = {{'station': 'KNJK', 'speed': 7, 'gusts': 0, 'direction': '250'}}
 

@@ -1,5 +1,4 @@
 from db             import Database
-from PIL            import Image, ImageDraw, ImageFont
 from airports       import get_airports
 from display        import Display
 
