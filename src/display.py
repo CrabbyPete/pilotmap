@@ -130,7 +130,8 @@ class Display:
             draw.text((96, 37), arrowdir, font=arrows, outline=255, fill=0) # Lower right of oled
 
         txt = wind['station'] + '\n' + str(wind['speed']) + ' kts'
-        w, h = draw.textsize(txt, font=regfont)         # Get textsize of what is to be displayed
+        #w, h = draw.textsize(txt, font=regfont)         # Get textsize of what is to be displayed
+        _, _, w, h = draw.textbbox((0, 0), font=regfont)
         x = (x2 - x1 - w)/2 + x1                        # Calculate center for text
         y = (y2 - y1 - h)/2 + y1 - offset
 
