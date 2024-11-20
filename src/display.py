@@ -112,11 +112,17 @@ class Display:
         disp.display()
 
     def oled(self, ch, wind):                        # Center text vertically and horizontally
+
+
         if ch > displays:
             return
-        
+
         offset = 3
-        self.select(ch)                              # Select the display to write to
+        self.select(ch)
+        disp.begin()
+        disp.clear()
+        disp.display()
+
         self.dim(0)                                  # Set brightness, 0 = Full bright, 1 = medium bright, 2 = low brightdef oledcenter(txt): #Center text vertically and horizontally
         pdb.set_trace()
         draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1) # Blank the display
@@ -124,10 +130,10 @@ class Display:
         if 'direction' in wind:
             # Draw wind direction using arrows
             arrowdir = winddir(int(wind['direction']))                 #get proper proper arrow to display
-            draw.text((96, 37), arrowdir, font=arrows, fill=fontcolor) #lower right of oled
+            draw.text((96, 37), arrowdir, font=arrows, outline=255, fill=0) #lower right of oled
             txt = str(wind['speed']) + 'kts'
 
-        w, h = draw.textsize(txt, font=regfont)        #get textsize of what is to be displayed
+        w, h = draw.textsize(txt, font=regfont, outline=255, fill=0)        #get textsize of what is to be displayed
         x = (x2 - x1 - w)/2 + x1                    #calculate center for text
         y = (y2 - y1 - h)/2 + y1 - offset
 
