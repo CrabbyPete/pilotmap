@@ -4,7 +4,7 @@ from display        import Display
 
 
 rdb = Database(host='127.0.0.1')
-oled = Display(0)
+oleds = Display(0)
 
 def main(file_name):
 
@@ -21,7 +21,7 @@ def main(file_name):
 
     winds = sorted(winds, key=lambda x:x['speed'], reverse=True)
     for number, wind in enumerate(winds):
-        oled.oled(number,wind)
+        oleds.oled(number,wind)
 
 
 

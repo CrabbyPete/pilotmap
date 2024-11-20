@@ -112,7 +112,7 @@ class Display:
         disp.display()
 
     def oled(self, ch, wind):                        # Center text vertically and horizontally
-        if ch > displays:
+        if ch >= displays:
             return
 
         offset = 3
@@ -123,26 +123,26 @@ class Display:
         disp.display()
 
         self.dim(0)                                  # Set brightness, 0 = Full bright, 1 = medium bright, 2 = low brightdef oledcenter(txt): #Center text vertically and horizontally
-        pdb.set_trace()
         draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1) # Blank the display
         x1, y1, x2, y2 = 0, 0, width, height        #create boundaries of display
-        if 'direction' in wind:
+        if direction := wind.get('direction'):
             # Draw wind direction using arrows
-            arrowdir = winddir(int(wind['direction']))                 #get proper proper arrow to display
+            arrowdir = winddir(int(direction))                 #get proper proper arrow to display
             draw.text((96, 37), arrowdir, font=arrows, outline=255, fill=0) #lower right of oled
-            txt = str(wind['speed']) + 'kts'
 
-        w, h = draw.textsize(txt, font=regfont, outline=255, fill=0)        #get textsize of what is to be displayed
+        txt = wind['station'] +'\n'+ str(wind['speed']) + ' kts'
+        w, h = draw.textsize(txt, font=regfont)        #get textsize of what is to be displayed
         x = (x2 - x1 - w)/2 + x1                    #calculate center for text
         y = (y2 - y1 - h)/2 + y1 - offset
 
-        draw.text((x, y), txt, align='center', font=regfont, fill=fontcolor) #Draw the text to buffer
+        draw.text((x, y), txt, align='center', font=regfont, fill=0) #Draw the text to buffer
         disp.image(image)                           #Display image
         disp.display()                              #display text in buffer
 
 
-
 if __name__ == "__main__":
     ch = 1
-    wind = {{'station': 'KNJK', 'speed': 7, 'gusts': 0, 'direction': '250'}}
+    wind = {'station': 'KNJK', 'speed': 7, 'gusts': 0, 'direction': '250'}
+    oled = Display(1)
+    oled.oled(ch, wind)
 
