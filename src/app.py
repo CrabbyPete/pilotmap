@@ -96,7 +96,7 @@ def airports():
     :return:
     """
     if request.method == "GET":
-        with open('airports_ne', 'r') as fyle:
+        with open('airports', 'r') as fyle:
             airports = [line.strip().replace('\n','') for line  in fyle.readlines()]
 
         context = {'airports': airports,
