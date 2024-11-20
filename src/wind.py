@@ -7,10 +7,6 @@ from display        import Display
 rdb = Database(host='127.0.0.1')
 oled = Display(0)
 
-image = Image.new('1', (width, height))             # Make sure to create image with mode '1' for 1-bit color.
-draw = ImageDraw.Draw(image)
-
-
 def main(file_name):
 
     station_ids = get_airports(file_name)
