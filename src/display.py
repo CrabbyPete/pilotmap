@@ -1,3 +1,4 @@
+import pdb
 import smbus2
 import Adafruit_SSD1306
 import RPi.GPIO as GPIO
@@ -21,7 +22,6 @@ tca = I2C.get_i2c_device(address=TCA_ADDR)
 
 bus = smbus2.SMBus(1)                               # From smbus2 set bus number
 
-
 #Create blank image for drawing.
 width = disp.width
 height = disp.height
@@ -36,7 +36,7 @@ fontsize = 24
 fontindex = 0                                   # Font selected may have various versions that are indexed. 0 = Normal. Leave at 0 unless you know otherwise.
 backcolor = 0                                   # 0 = Black, background color for OLED display. Shouldn't need to change
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
-
+displays = 8
 
 boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
 regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
@@ -112,9 +112,13 @@ class Display:
         disp.display()
 
     def oled(self, ch, wind):                        # Center text vertically and horizontally
+        if ch > displays:
+            return
+        
         offset = 3
         self.select(ch)                              # Select the display to write to
         self.dim(0)                                  # Set brightness, 0 = Full bright, 1 = medium bright, 2 = low brightdef oledcenter(txt): #Center text vertically and horizontally
+        pdb.set_trace()
         draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1) # Blank the display
         x1, y1, x2, y2 = 0, 0, width, height        #create boundaries of display
         if 'direction' in wind:
