@@ -29,7 +29,7 @@ draw = ImageDraw.Draw(image)
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
 # Arrows.ttf downloaded from https://www.1001fonts.com/arrows-font.html#styles
 fontsize = 24
-fontindex = 0                                   # Font selected may have various versions that are indexed. 0 = Normal. Leave at 0 unless you know otherwise.
+fontindex = 0                                   # Font selected may have various versions that are indexed.
 backcolor = 0                                   # 0 = Black, background color for OLED display. Shouldn't need to change
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
 displays = 8
@@ -77,20 +77,28 @@ class Display:
         self.current_channel = channel
         tca.writeRaw8(1 << self.current_channel)
 
-    def dim(self):                                  #Dimming routine. 0 = Full Brightness, 1 = low brightness, 2 = medium brightness. See https://www.youtube.com/watch?v=hFpXfSnDNSY a$
-        level = GPIO.input(4)                       # Set dimming level
-        if level == 0:                              #https://github.com/adafruit/Adafruit_Python_SSD1306/blob/master/Adafruit_SSD1306/SSD1306.py for more info.
-            disp.command(0x81)                      #SSD1306_SETCONTRAST = 0x81
+    def dim(self, level=None):
+        """
+        Dimming routine. 0 = Full Brightness, 1 = low brightness, 2 = medium brightness.
+        See https://www.youtube.com/watch?v=hFpXfSnDNSY a$
+        :param level: int:
+        :return:
+        """
+        if not level:
+            level = GPIO.input(4)
+
+        if level == 0:
+            disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
             disp.command(255)
-            disp.command(0xDB)                      #SSD1306_SETVCOMDETECT = 0xDB
+            disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
             disp.command(255)
 
         if level == 1 or level == 2:
-            disp.command(0x81)                      #SSD1306_SETCONTRAST = 0x81
+            disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
             disp.command(50)
 
         if level == 1:
-            disp.command(0xDB)                      #SSD1306_SETVCOMDETECT = 0xDB
+            disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
             disp.command(50)
 
     def invert(self, white=False):
@@ -99,7 +107,7 @@ class Display:
         :param white:
         :return:
         """
-        if white:                                   #Inverted = black text on white background #0 = Normal, 1 = Inverted
+        if white:                                   # Inverted = black text on white background #0 = Normal, 1 = Inverted
             disp.command(0xA7)
         else:
             disp.command(0xA6)
@@ -176,20 +184,20 @@ def main(file_name):
             if station == "LGND":
                 continue
             station_data = rdb.getall(station)
-            wind_speed = int(station_data.get('wind_speed_kt',0))
-            wind_gusts = station_data.get('wind_gust_kt',0)
+            wind_speed = int(station_data.get('wind_speed_kt', 0))
+            wind_gusts = station_data.get('wind_gust_kt', 0)
             wind_dir   = station_data.get('wind_dir_degrees')
-            winds.append({'station':station, 'speed':wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
+            winds.append({'station': station, 'speed': wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
 
-        winds = sorted(winds, key=lambda x:x['speed'], reverse=True)
+        winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            oleds.wind(number,wind)
+            oleds.wind(number, wind)
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description ='Get weather for airports')
-    parser.add_argument('--file','-f', nargs='?')
+    parser.add_argument('--file', '-f', nargs='?')
     args = parser.parse_args()
     if not args.file:
         main('airports')

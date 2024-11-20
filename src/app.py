@@ -79,7 +79,6 @@ def configuration():
             # 'ipadd': ipadd,
             'ipaddresses': '',
             'timestr': '',
-            'num': 0,
             'current_timezone': '',
             'update_available': False,
             'update_vers': False,
@@ -125,7 +124,7 @@ def airports():
 @app.route("/run/{command}")
 def run(command, response: Response):
     """ Run commands to the server eg "near Montauk, NY 20 mile on"
-    :param line:
+    :param command:
     :return:
     """
     args = command.split()
@@ -137,7 +136,7 @@ def run(command, response: Response):
                        'dim',  # Dim the lights to a value
                        'blink'
                        ):
-        response.status_code = HTTP_404_NOT_FOUND
+        response.status_code = 404
         return {"detail": "Command not found"}
 
     if args[0] == 'near':  # Light stations nearby
@@ -159,14 +158,14 @@ def run(command, response: Response):
 @app.route("/lights/{setting}")
 def lights(setting):
     """ Turn on and off lights
-    :param line:
+    :param setting: str: on or off
     :return:
     """
     if setting == 'on':
-        rdb.set_values(lights=1)
+        rdb.set_values(dict(lights=1))
     elif setting == 'off':
-        rdb.set_value(lights=0)
+        rdb.set_values(dict(lights=0))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

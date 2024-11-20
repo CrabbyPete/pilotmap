@@ -4,7 +4,7 @@ After=weather.service.service
 
 [Service]
 WorkingDirectory=/usr/local/src
-ExecStart=/home/pi/pilotmap/bin/python3 /usr/local/src/lights.py
+ExecStart=/home/pi/venv/bin/python3 /usr/local/src/lights.py
 SyslogIdentifier=SRV_DISPLAY
 Restart=always
 RestartSec=30
