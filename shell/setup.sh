@@ -4,7 +4,7 @@ ln /etc/nginx/sites-available/app.conf /etc/nginx/sites-enabled/
 rm /etc/nginx/sites-available/default
 rm /etc/nginx//sites-enabled/default
 
-cp /home/pi/pilotmap/src/* /usr/local/src
+cp -r /home/pi/pilotmap/src/* /usr/local/src
 
 cp /home/pi/pilotmap/etc/systemd/weather.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/weather.service

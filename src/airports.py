@@ -16,7 +16,7 @@ def get_apinfo(airports=None):
     """
     info = dict()
     if not airports:
-        with open('airports_ne', 'r') as fyle:
+        with open('airport_files/airports_ne', 'r') as fyle:
             airports = [line.strip().replace('\n','') for line  in fyle.readlines()]
 
     for airport in airports:

@@ -194,7 +194,7 @@ def main(file_name):
         for number, wind in enumerate(winds):
             oleds.wind(number, wind)
 
-        time.sleep(60*7)
+        time.sleep(60)
 
 
 if __name__ == "__main__":
