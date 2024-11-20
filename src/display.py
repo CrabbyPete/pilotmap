@@ -2,9 +2,10 @@ import smbus2
 import Adafruit_SSD1306
 import RPi.GPIO as GPIO
 
-
+from db             import Database
 from PIL            import Image, ImageDraw, ImageFont
 from Adafruit_GPIO  import I2C
+from airports       import get_airports
 
 
 # Set up the lights sensor
@@ -32,17 +33,41 @@ draw = ImageDraw.Draw(image)
 #Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
 #Arrows.ttf downloaded from https://www.1001fonts.com/arrows-font.html#styles
 fontsize = 24
+fontindex = 0                                   # Font selected may have various versions that are indexed. 0 = Normal. Leave at 0 unless you know otherwise.
+backcolor = 0                                   # 0 = Black, background color for OLED display. Shouldn't need to change
+fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
+
 
 boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
 regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
 arrows   = ImageFont.truetype('Arrows.ttf', fontsize, 0)
 
 
+def winddir(wndir=0):                           #Using the arrows.ttf font return arrow to represent wind direction at airport
+    if (338 <= wndir <= 360) or (1 <= wndir <= 22): #8 arrows representing 45 degrees each around the compass.
+        return 'd'                              #wind blowing from the north (pointing down)
+    elif 23 <= wndir <= 67:
+        return 'f'                              #wind blowing from the north-east (pointing lower-left)
+    elif 68 <= wndir <= 113:
+        return 'b'                              #wind blowing from the east (pointing left)
+    elif 114 <= wndir <= 159:
+        return 'e'                              #wind blowing from the south-east (pointing upper-left)
+    elif 160 <= wndir <= 205:
+        return 'c'                              #wind blowing from the south (pointing up)
+    elif 206 <= wndir <= 251:
+        return 'g'                              #wind blowing from the south-west (pointing upper-right)
+    elif 252 <= wndir <= 297:
+        return 'a'                              #wind blowing from the west (pointing right)
+    elif 298 <= wndir <= 337:
+        return 'h'                              #wind blowing from the north-west (pointing lower-right)
+    else:
+        return ''
+
+
 class Display:
     """
     Class to control a single display
     """
-
     def __init__(self, channel):
         self.current_channel = channel
         self.select(channel)
@@ -83,10 +108,30 @@ class Display:
         disp.image(image)
         disp.display()
 
+    def show(self, image):
+        disp.display()
 
-def main():
-    display = Display(1)
-    display.clear()
+    def oled(self, ch, wind):                        # Center text vertically and horizontally
+        offset = 3
+        self.select(ch)                              # Select the display to write to
+        self.dim(0)                                  # Set brightness, 0 = Full bright, 1 = medium bright, 2 = low brightdef oledcenter(txt): #Center text vertically and horizontally
+        draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1) # Blank the display
+        x1, y1, x2, y2 = 0, 0, width, height        #create boundaries of display
+        if 'direction' in wind:
+            # Draw wind direction using arrows
+            arrowdir = winddir(int(wind['direction']))                 #get proper proper arrow to display
+            draw.text((96, 37), arrowdir, font=arrows, fill=fontcolor) #lower right of oled
+            txt = str(wind['speed']) + 'kts'
+
+        w, h = draw.textsize(txt, font=regfont)        #get textsize of what is to be displayed
+        x = (x2 - x1 - w)/2 + x1                    #calculate center for text
+        y = (y2 - y1 - h)/2 + y1 - offset
+
+        draw.text((x, y), txt, align='center', font=regfont, fill=fontcolor) #Draw the text to buffer
+        disp.image(image)                           #Display image
+        disp.display()                              #display text in buffer
+
+
 
 
 
