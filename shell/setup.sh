@@ -12,6 +12,10 @@ chmod 644 /etc/systemd/system/weather.service
 cp /home/pi/pilotmap/etc/systemd/lights.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/lights.service
 
+cp /home/pi/pilotmap/etc/systemd/display.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/display.service
+
+
 systemctl daemon-reload
 
 systemctl start weather.service
