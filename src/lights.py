@@ -167,9 +167,6 @@ def main(file_name):
             if sleep > 30.:
                 break
 
-            log.info("stop blink")
-
-
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description ='Get weather for airports')
