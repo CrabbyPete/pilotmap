@@ -6,11 +6,11 @@ rm /etc/nginx//sites-enabled/default
 
 cp /home/pi/pilotmap/src/* /usr/local/src
 
-cp /home/pi/pilotmap/etc/system/weather.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/weather.service
+cp /home/pi/pilotmap/etc/systemd/weather.service /etc/systemd/system/
+chmod 644 /etc/systemd/systemd/weather.service
 
-cp /home/pi/pilotmap/etc/system/lights.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/lights.service
+cp /home/pi/pilotmap/etc/systemd/lights.service /etc/systemd/system/
+chmod 644 /etc/systemd/systemd/lights.service
 
 systemctl daemon-reload
 
