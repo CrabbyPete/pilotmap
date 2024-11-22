@@ -147,9 +147,13 @@ def main(file_name=None):
         # Store the data you want in to the database
         try:
             rdb.put(station, station_data)
-            rdb.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} for station {station} in the db")
+
+        try:
+            rdb.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
+        except Exception as e:
+            log.error(f"Error:{e} putting {station_data} geodata for station {station} in the db")
 
 
 if __name__ == "__main__":
