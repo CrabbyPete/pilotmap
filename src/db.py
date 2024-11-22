@@ -42,6 +42,12 @@ class Database(object):
         @param values: dictionary of values to save
         @returns: None
         """
+        # See which keys no longer exist eg. wx_string
+        keys = [ item.decode() for item in self.rdb.hkeys(station)]
+        diff = set(keys) - set(list(values.keys))
+        if 'wx_sting' in diff:
+            self.rdb.hdel(station,'wx_string')
+            
         for key, value in values.items():
             if not value or isinstance(value, dict) or isinstance(value, list):
                 continue
