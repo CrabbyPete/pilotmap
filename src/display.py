@@ -154,8 +154,12 @@ class Display:
         if direction := wind.get('direction'):
             arrowdir = winddir(int(direction))
             draw.text((96, 37), arrowdir, font=arrows, outline=255, fill=0) # Lower right of oled
+        if wind['speed'] == -1:
+            wind['speed'] = "Not reported"
+        else:
+            wind['speed'] =f"{wind['speed']} kts"
 
-        txt = wind['station'] + '\n' + str(wind['speed']) + ' kts'
+        txt = wind['station'] + '\n'+ wind['speed']
         #w, h = draw.textsize(txt, font=regfont)         # Get textsize of what is to be displayed
         _, _, w, h = draw.textbbox((0, 0), txt, font=regfont)
         x = (x2 - x1 - w)/2 + x1                        # Calculate center for text
@@ -185,10 +189,15 @@ def main(file_name):
             if station == "LGND":
                 continue
             station_data = rdb.getall(station)
-            wind_speed = int(station_data.get('wind_speed_kt', 0))
-            wind_gusts = station_data.get('wind_gust_kt', 0)
+
+            wind_gusts = station_data.get('wind_gust_kt')
             wind_dir   = station_data.get('wind_dir_degrees')
-            winds.append({'station': station, 'speed': wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
+            wind_speed = station_data.get('wind_speed_kt')
+            if not wind_speed:
+                wind_speed = "Not reported"
+                winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
+            else:
+                winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
