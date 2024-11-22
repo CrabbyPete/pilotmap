@@ -150,12 +150,11 @@ def main(file_name):
             strip.set_pixel_color(led, led_color)
 
         saved_colors = [strip.get_pixel(led) for led in blink]
+
+        sleep = 0
+        # Don't change any other led for 30 seconds as we check which to blink
         while True:
             strip.show_pixels()
-
-            # Don't change any other led for 30 seconds as we check which to blink
-            sleep = 0
-
             for index, led in enumerate(blink):
                 if strip.get_pixel(led) == 0:
                     strip.set_pixel_color(led, saved_colors[index])
@@ -164,7 +163,7 @@ def main(file_name):
 
             time.sleep(.5)
             sleep += .5
-            if sleep > 30.:
+            if sleep > 30:
                 break
 
 if __name__ == "__main__":
