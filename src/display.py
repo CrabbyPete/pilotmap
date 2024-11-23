@@ -3,6 +3,7 @@ import Adafruit_SSD1306
 import RPi.GPIO as GPIO
 
 from db             import Database
+from log            import log
 from PIL            import Image, ImageDraw, ImageFont
 from Adafruit_GPIO  import I2C
 from airports       import get_airports
@@ -12,19 +13,6 @@ from airports       import get_airports
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN)
 
-# Set up the OLED driver
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32 - disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
-
-# This is the multiplexor. You need to set it before you write to the display
-tca = I2C.get_i2c_device(address=0x70)              # Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
-
-
-# Create blank image for drawing.
-width = disp.width
-height = disp.height
-
-image = Image.new('1', (width, height))             # Make sure to create image with mode '1' for 1-bit color.
-draw = ImageDraw.Draw(image)
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
@@ -70,13 +58,31 @@ class Display:
     """
     Class to control a single display
     """
+    width = None
+    height = None
+    disp = None
+    tca = None
+
     def __init__(self, channel):
+
+        try:
+            self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
+        except Exception as e:
+            log.error(f"Error: {e} initializing OLED displays")
+            return
+        self.width = self.disp.width
+        self.height = self.disp.height
+        """
+        This is the multiplexor. You need to set it before you write to the display
+        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
+        """
+        self.tca = I2C.get_i2c_device(address=0x70)              #
         self.current_channel = channel
         self.select(channel)
 
     def select(self, channel):                 # Used to tell the multiplexer which oled display to send data to.
         self.current_channel = channel
-        tca.writeRaw8(1 << self.current_channel)
+        self.tca.writeRaw8(1 << self.current_channel)
 
     def dim(self, level=None):
         """
@@ -89,18 +95,18 @@ class Display:
             level = GPIO.input(4)
 
         if level == 0:
-            disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
-            disp.command(255)
-            disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
-            disp.command(255)
+            self.disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
+            self.disp.command(255)
+            self.disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
+            self.disp.command(255)
 
         if level == 1 or level == 2:
-            disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
-            disp.command(50)
+            self.disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
+            self.disp.command(50)
 
         if level == 1:
-            disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
-            disp.command(50)
+            self.disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
+            self.disp.command(50)
 
     def invert(self, white=False):
         """
@@ -109,16 +115,16 @@ class Display:
         :return:
         """
         if white:                                   # Inverted = black text on white background #0 = Normal, 1 = Inverted
-            disp.command(0xA7)
+            self.disp.command(0xA7)
         else:
-            disp.command(0xA6)
+            self.disp.command(0xA6)
 
     def rotate180(self):
         """
         Rotate display 180 degrees to allow mounting of OLED upside down
         """
-        disp.command(0xA0)
-        disp.command(0xC0)
+        self.disp.command(0xA0)
+        self.disp.command(0xC0)
 
     def clear(self):
         """
@@ -126,9 +132,9 @@ class Display:
         :return:
         """
         self.select(self.current_channel)
-        disp.clear()
+        self.disp.clear()
 
-    def wind(self, ch, wind):
+    def show(self, ch, display_image):
         """
         Display wind info on a display
         :param ch: which display
@@ -141,38 +147,50 @@ class Display:
 
         offset = 3
         self.select(ch)
+        self.disp.clear()
+        self.disp.display()
 
-        disp.begin()
-        disp.clear()
-        disp.display()
-
-        self.dim()                                     # Set brightness, 0=Full bright, 1=medium bright, 2=low bright
-        draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1)
-        x1, y1, x2, y2 = 0, 0, width, height            # Create boundaries of display
-
-        # Draw wind direction using arrows
-        if direction := wind.get('direction'):
-            arrowdir = winddir(int(direction))
-            draw.text((96, 37), arrowdir, font=arrows, outline=255, fill=0) # Lower right of oled
-        if wind['speed'] == -1:
-            wind['speed'] = "Not reported"
-        else:
-            wind['speed'] =f"{wind['speed']} kts"
-
-        txt = wind['station'] + '\n'+ wind['speed']
-        #w, h = draw.textsize(txt, font=regfont)         # Get textsize of what is to be displayed
-        _, _, w, h = draw.textbbox((0, 0), txt, font=regfont)
-        x = (x2 - x1 - w)/2 + x1                        # Calculate center for text
-        y = (y2 - y1 - h)/2 + y1 - offset
-
-        # Draw the text to buffer
-        draw.text((x, y), txt, align='center', font=regfont, fill=0)
-        disp.image(image)
-        disp.display()
+        self.dim()
+        self.disp.image(display_image)
+        self.disp.display()
 
 
 rdb = Database(host='127.0.0.1')
 oleds = Display(0)
+image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
+draw = ImageDraw.Draw(image)
+
+
+def draw_display(wind, width, height):
+    """
+    Draw a display from wind data
+    :param wind: dict: wind data
+    :param width: oled width
+    :param height: oled height
+    :return: None
+    """
+    offset = 3
+    draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1)
+    x1, y1, x2, y2 = 0, 0, width, height                    # Create boundaries of display
+
+    # Draw wind direction using arrows
+    if direction := wind.get('direction'):
+        arrow_direction = winddir(int(direction))
+        draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0) # Lower right of oled
+
+    if wind['speed'] == -1:
+        wind['speed'] = "Not reported"
+    else:
+        wind['speed'] = f"{wind['speed']} kts"
+
+    txt = wind['station'] + '\n'+ wind['speed']
+    _, _, w, h = draw.textbbox((0, 0), txt, font=regfont)   # Get textsize of what is to be displayed
+    x = (x2 - x1 - w)/2 + x1                                # Calculate center for text
+    y = (y2 - y1 - h)/2 + y1 - offset
+
+    # Draw the text to buffer
+    draw.text((x, y), txt, align='center', font=regfont, fill=0)
+    return
 
 
 def main(file_name):
@@ -194,14 +212,14 @@ def main(file_name):
             wind_dir   = station_data.get('wind_dir_degrees')
             wind_speed = station_data.get('wind_speed_kt')
             if not wind_speed:
-                wind_speed = "Not reported"
                 winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
             else:
                 winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            oleds.wind(number, wind)
+            draw_display(wind, oleds.width, oleds.height)
+            oleds.show(number, image)
 
         time.sleep(60)
 
