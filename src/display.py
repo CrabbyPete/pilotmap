@@ -62,6 +62,7 @@ class Display:
     height = None
     disp = None
     tca = None
+    available = False
 
     def __init__(self, channel):
 
@@ -70,6 +71,7 @@ class Display:
         except Exception as e:
             log.error(f"Error: {e} initializing OLED displays")
             return
+        self.available = True
         self.width = self.disp.width
         self.height = self.disp.height
         """
@@ -114,7 +116,7 @@ class Display:
         :param white:
         :return:
         """
-        if white:                                   # Inverted = black text on white background #0 = Normal, 1 = Inverted
+        if white:                                 # Inverted = black text on white background #0 = Normal, 1 = Inverted
             self.disp.command(0xA7)
         else:
             self.disp.command(0xA6)
@@ -138,14 +140,13 @@ class Display:
         """
         Display wind info on a display
         :param ch: which display
-        :param wind: dict: wind info
+        :param display_image: Image
         :return:
         """
         # Center text vertically and horizontally
         if ch >= displays:
             return
 
-        offset = 3
         self.select(ch)
         self.disp.clear()
         self.disp.display()
@@ -176,14 +177,14 @@ def draw_display(wind, width, height):
     # Draw wind direction using arrows
     if direction := wind.get('direction'):
         arrow_direction = winddir(int(direction))
-        draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0) # Lower right of oled
+        draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0)  # Lower right of oled
 
     if wind['speed'] == -1:
         wind['speed'] = "Not reported"
     else:
         wind['speed'] = f"{wind['speed']} kts"
 
-    txt = wind['station'] + '\n'+ wind['speed']
+    txt = wind['station'] + '\n' + wind['speed']
     _, _, w, h = draw.textbbox((0, 0), txt, font=regfont)   # Get textsize of what is to be displayed
     x = (x2 - x1 - w)/2 + x1                                # Calculate center for text
     y = (y2 - y1 - h)/2 + y1 - offset
@@ -218,8 +219,11 @@ def main(file_name):
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            draw_display(wind, oleds.width, oleds.height)
-            oleds.show(number, image)
+            if oleds.available:
+                draw_display(wind, oleds.width, oleds.height)
+                oleds.show(number, image)
+            else:
+                log.error("Displays not available")
 
         time.sleep(60)
 
