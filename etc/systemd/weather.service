@@ -3,7 +3,7 @@ Description=FAA weather data service
 
 [Service]
 WorkingDirectory=/usr/local/src
-ExecStart=/home/pi/venv/bin/python3 /usr/local/src/weather.py -f /usr/local/src
+ExecStart=/home/pi/venv/bin/python3 /usr/local/src/weather.py -f /usr/local/src/airports
 SyslogIdentifier=WEATHER
 Restart=always
 RestartSec=30

@@ -1,3 +1,4 @@
+set -x
 systemctl stop nginx
 cp /home/pi/pilotmap/etc/nginx/app.conf /etc/nginx/sites-available
 ln /etc/nginx/sites-available/app.conf /etc/nginx/sites-enabled/
