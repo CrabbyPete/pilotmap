@@ -158,13 +158,12 @@ class Display:
 
 rdb = Database(host='127.0.0.1')
 oleds = Display(0)
-image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
-draw = ImageDraw.Draw(image)
 
 
-def draw_display(wind, width, height):
+def draw_display(draw, wind, width, height):
     """
     Draw a display from wind data
+    :param: draw: Draw
     :param wind: dict: wind data
     :param width: oled width
     :param height: oled height
@@ -201,6 +200,9 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
+    if oleds.available:
+        image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
+        draw = ImageDraw.Draw(image)
 
     while True:
         winds = []
@@ -220,10 +222,10 @@ def main(file_name):
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
             if oleds.available:
-                draw_display(wind, oleds.width, oleds.height)
+                draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
             else:
-                log.error("Displays not available")
+                log.info(wind)
 
         time.sleep(60)
 
