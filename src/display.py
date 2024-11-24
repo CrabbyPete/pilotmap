@@ -175,8 +175,12 @@ def draw_display(draw, wind, width, height):
 
     # Draw wind direction using arrows
     if direction := wind.get('direction'):
-        arrow_direction = winddir(int(direction))
-        draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0)  # Lower right of oled
+        try:
+            arrow_direction = winddir(int(direction))   # Make sure it an int for direction
+        except Exception as e:
+            log.error(f"Error:{e} getting wind direction {direction}")
+        else:
+            draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0)  # Lower right of oled
 
     if wind['speed'] == -1:
         wind['speed'] = "Not reported"
