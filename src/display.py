@@ -176,7 +176,7 @@ def draw_display(draw, wind, width, height):
     # Draw wind direction using arrows
     if direction := wind.get('direction'):
         try:
-            arrow_direction = winddir(int(direction))   # Make sure it an int for direction
+            arrow_direction = winddir(int(direction))   # Make sure its an int for direction
         except Exception as e:
             log.error(f"Error:{e} getting wind direction {direction}")
         else:

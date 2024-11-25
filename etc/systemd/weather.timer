@@ -2,7 +2,7 @@
 Description=Run FAA Weather Report
 
 [Timer]
-OnCalendar=*:0/15
+OnCalendar=*:0/1
 
 [Install]
 WantedBy=timers.target
