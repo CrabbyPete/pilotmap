@@ -1,5 +1,5 @@
 import gzip
-import json
+import arrow
 import requests
 import xmltodict
 
@@ -62,27 +62,8 @@ def get_metars():
                 if 'wx_string' in taf:
                     index[taf['station_id']]['wx_string'] = taf['wx_string']
 
-
     return index
 
-'''
-def get_airport(station):
-    """ Get the name of the airport
-    :param station:
-    :return: str: airport name
-    """
-    #url = f"https://aviationweather.gov/api/data/airport?ids={station}&format=json"
-    url = f"https://aviationweather.gov/api/data/metar?ids={station}&format=json"
-    reply = requests.get(url)
-    if reply.ok:
-        try:
-            data = json.loads(reply.text)
-            if isinstance(data, list):
-                return data[0]
-        except Exception as e:
-            log.error(f"Error {e} translating json:{reply.text}")
-    return {}
-'''
 
 def get_station(station):
     """ Get info for a particular station
@@ -103,9 +84,11 @@ def get_station(station):
 
 def main(file_name=None):
     """
-    Main routine. Schedule to run every 15 minutes
+    Main routine. Schedule to run every 5 minutes
+    :param: file_name: str: airport file
     :return: None
     """
+    log.info(f"Starting at {arrow.now()}")
     tf = TimezoneFinder()
 
     # Open the aiport file, each line represents an LED on the board
@@ -155,6 +138,7 @@ def main(file_name=None):
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} geodata for station {station} in the db")
 
+    log.info(f"Ending at {arrow.now()}")
 
 if __name__ == "__main__":
     import argparse
