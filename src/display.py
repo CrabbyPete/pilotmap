@@ -70,7 +70,7 @@ class Display:
         Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
         """
         self.tca = I2C.get_i2c_device(address=0x70)              #
-        self.select(0)
+        self.select(1)
 
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
