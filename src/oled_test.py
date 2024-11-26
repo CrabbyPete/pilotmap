@@ -53,8 +53,8 @@ disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 
 # Initialize library.
 for i in range(8):
-    tca.writeRaw8(1<<(i+1))
-    
+    tca.writeRaw8(1<<i)
+
     disp.begin()
 
     # Clear display.
