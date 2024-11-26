@@ -1,17 +1,24 @@
 import time
-import Adafruit_SSD1306
-import RPi.GPIO as GPIO
 
 from db             import Database
 from log            import log
 from PIL            import Image, ImageDraw, ImageFont
-from Adafruit_GPIO  import I2C
+
 from airports       import get_airports
 
-
-# Set up the lights sensor
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN)
+# Try and import the hardware specific imports
+try:
+    import Adafruit_SSD1306
+    import RPi.GPIO as GPIO
+    from Adafruit_GPIO  import I2C
+except Exception as e:
+    log.error(f"Error:{e} importing hardware settings")
+    hardware = False
+else:
+    # Set up the lights sensor
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(4, GPIO.IN)
+    hardware = True
 
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
@@ -23,9 +30,12 @@ backcolor = 0                                   # 0 = Black, background color fo
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
 displays = 8
 
-boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
-regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
-arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
+try:
+    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
+    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
+    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
+except Exception as e:
+    log.error(f"Error:{e} importing fonts")
 
 
 def winddir(wndir=0):
@@ -156,8 +166,6 @@ class Display:
         self.disp.display()
 
 
-rdb = Database(host='127.0.0.1')
-oleds = Display(0)
 
 
 def draw_display(draw, wind, width, height):
@@ -196,6 +204,7 @@ def draw_display(draw, wind, width, height):
     draw.text((x, y), txt, align='center', font=regfont, fill=0)
     return
 
+rdb = Database(host='127.0.0.1')
 
 def main(file_name):
     """
@@ -204,7 +213,8 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
-    if oleds.available:
+    if hardware:
+        oleds = Display()
         image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
         draw = ImageDraw.Draw(image)
 
@@ -225,7 +235,7 @@ def main(file_name):
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            if oleds.available:
+            if hardware:
                 draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
             else:
