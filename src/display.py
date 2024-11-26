@@ -140,7 +140,7 @@ class Display:
 
 rdb = Database(host='127.0.0.1')
 oleds = Display()
-image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
+image = Image.new('1', (display.width, display.height))      # Make sure to create image with mode '1' for 1-bit color.
 draw = ImageDraw.Draw(image)
 
 
