@@ -140,9 +140,11 @@ class Display:
 
 rdb = Database(host='127.0.0.1')
 oleds = Display()
+image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
+draw = ImageDraw.Draw(image)
 
 
-def draw_display(draw, wind, width, height):
+def draw_display(wind):
     """
     Draw a display from wind data
     :param: draw: Draw
@@ -152,8 +154,8 @@ def draw_display(draw, wind, width, height):
     :return: None
     """
     offset = 3
-    draw.rectangle((0, 0, width-1, height-1), outline=0, fill=1)
-    x1, y1, x2, y2 = 0, 0, width, height                    # Create boundaries of display
+    draw.rectangle((0, 0, display.width-1, display.height-1), outline=0, fill=1)
+    x1, y1, x2, y2 = 0, 0, display.width, display.height                    # Create boundaries of display
 
     # Draw wind direction using arrows
     if direction := wind.get('direction'):
@@ -186,12 +188,6 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
-    try:
-        image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
-        draw = ImageDraw.Draw(image)
-    except Exception as e:
-        log.error(f"Error:{e} trying to set up drawing")
-
     while True:
         winds = []
         for station in station_ids:
@@ -209,7 +205,7 @@ def main(file_name):
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            draw_display(draw, wind, display.width, display.height)
+            draw_display(wind)
             oleds.show(number, image)
 
         time.sleep(60)
