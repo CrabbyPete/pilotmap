@@ -29,13 +29,6 @@ backcolor = 0                                   # 0 = Black, background color fo
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
 displays = 8
 
-try:
-    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
-    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
-    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
-except Exception as e:
-    log.error("Error:{e} loading fonts")
-
 
 def winddir(wndir=0):
     """
@@ -176,10 +169,33 @@ rdb = Database(host='127.0.0.1')
 oleds = Display(0)
 
 try:
-    image = Image.new('1', (oleds.width, oleds.height))    # Make sure to create image with mode '1' for 1-bit color.
-    draw = ImageDraw.Draw(image)
+    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
 except Exception as e:
-    log.error(f"Error:{e} loading fonts")
+    log.error(f"Error: loading boldfont")
+
+try:
+    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
+except Exception as e:
+    log.error(f"Error loading regular font")
+
+try:
+    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
+except Exception as e:
+    log.error(f"Error:{e} loading arrow fonts")
+
+
+
+try:
+    image = Image.new('1', (oleds.width, oleds.height))    # Make sure to create image with mode '1' for 1-bit color.
+except Exception as e:
+    log.error(f"Error creating image")
+    image = None
+else:
+    try:
+        draw = ImageDraw.Draw(image)
+    except Exception as e:
+        log.error(f"Error:{e} drawing image")
+        draw = None
 
 
 def draw_display(draw, wind, width, height):
