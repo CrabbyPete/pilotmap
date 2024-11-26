@@ -1,12 +1,18 @@
 import time
-import Adafruit_SSD1306
-import RPi.GPIO as GPIO
 
 from db             import Database
 from log            import log
 from PIL            import Image, ImageDraw, ImageFont
-from Adafruit_GPIO  import I2C
+
 from airports       import get_airports
+
+# Imports for hordware
+try:
+    import Adafruit_SSD1306
+    import RPi.GPIO as GPIO
+    from Adafruit_GPIO  import I2C
+except ImportError:
+    pass
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
@@ -47,9 +53,12 @@ def winddir(wndir=0):
     else:
         return ''
 
-tca = I2C.get_i2c_device(address=0x70)
-tca.writeRaw8(1 << 0)
-display = Adafruit_SSD1306.SSD1306_128_64(rst=None)
+try:
+    tca = I2C.get_i2c_device(address=0x70)
+    tca.writeRaw8(1 << 0)
+    display = Adafruit_SSD1306.SSD1306_128_64(rst=None)
+except Exception as e:
+    log.error("Error:{e} setting up display")
 
 # Set up the lights sensor
 GPIO.setmode(GPIO.BCM)
@@ -137,12 +146,15 @@ class Display:
         display.image(display_image)
         display.display()
 
-
 rdb = Database(host='127.0.0.1')
-oleds = Display()
-image = Image.new('1', (display.width, display.height))      # Make sure to create image with mode '1' for 1-bit color.
-draw = ImageDraw.Draw(image)
 
+try:
+    oleds = Display()
+    image = Image.new('1', (display.width, display.height))      # Make sure to create image with mode '1' for 1-bit color.
+    draw = ImageDraw.Draw(image)
+except Exception as e:
+    log.error("Error:{e} trying to initialize display")
+    oleds = None
 
 def draw_display(wind):
     """
@@ -204,9 +216,12 @@ def main(file_name):
                 winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
-        for number, wind in enumerate(winds):
-            draw_display(wind)
-            oleds.show(number, image)
+        if oleds:
+            for number, wind in enumerate(winds):
+                draw_display(wind)
+                oleds.show(number, image)
+        else:
+            log.info(winds)
 
         time.sleep(60)
 
