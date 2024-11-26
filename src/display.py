@@ -8,12 +8,6 @@ from PIL            import Image, ImageDraw, ImageFont
 from Adafruit_GPIO  import I2C
 from airports       import get_airports
 
-
-# Set up the lights sensor
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN)
-
-
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
 # Arrows.ttf downloaded from https://www.1001fonts.com/arrows-font.html#styles
@@ -53,6 +47,14 @@ def winddir(wndir=0):
     else:
         return ''
 
+tca = I2C.get_i2c_device(address=0x70)
+tca.writeRaw8(1 << 0)
+display = Adafruit_SSD1306.SSD1306_128_64(rst=None)
+
+# Set up the lights sensor
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN)
+
 
 class Display:
     """
@@ -69,22 +71,13 @@ class Display:
         Control each OLED and the multiplexor. You need to set the multiplexer before you write to the display
         Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
         """
-        self.tca = I2C.get_i2c_device(address=0x70)              #
-        self.select(1)
-
-        try:
-            self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
-        except Exception as e:
-            log.error(f"Error: {e} initializing OLED displays")
-            return
-
         self.available = True
         self.width = self.disp.width
         self.height = self.disp.height
 
     def select(self, channel):                 # Used to tell the multiplexer which oled display to send data to.
         self.current_channel = channel
-        self.tca.writeRaw8(1 << self.current_channel)
+        tca.writeRaw8(1 << self.current_channel)
 
     def dim(self, level=None):
         """
@@ -97,18 +90,18 @@ class Display:
             level = GPIO.input(4)
 
         if level == 0:
-            self.disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
-            self.disp.command(255)
-            self.disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
-            self.disp.command(255)
+            display.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
+            display.command(255)
+            display.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
+            display.command(255)
 
         if level == 1 or level == 2:
-            self.disp.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
-            self.disp.command(50)
+            display.command(0x81)                      # SSD1306_SETCONTRAST = 0x81
+            display.command(50)
 
         if level == 1:
-            self.disp.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
-            self.disp.command(50)
+            display.command(0xDB)                      # SSD1306_SETVCOMDETECT = 0xDB
+            display.command(50)
 
     def invert(self, white=False):
         """
@@ -117,16 +110,16 @@ class Display:
         :return:
         """
         if white:                                 # Inverted = black text on white background #0 = Normal, 1 = Inverted
-            self.disp.command(0xA7)
+            display.command(0xA7)
         else:
-            self.disp.command(0xA6)
+            display.command(0xA6)
 
     def rotate180(self):
         """
         Rotate display 180 degrees to allow mounting of OLED upside down
         """
-        self.disp.command(0xA0)
-        self.disp.command(0xC0)
+        display.command(0xA0)
+        display.command(0xC0)
 
     def clear(self):
         """
@@ -134,7 +127,7 @@ class Display:
         :return:
         """
         self.select(self.current_channel)
-        self.disp.clear()
+        display.clear()
 
     def show(self, ch, display_image):
         """
@@ -148,12 +141,13 @@ class Display:
             return
 
         self.select(ch)
-        self.disp.clear()
-        self.disp.display()
+        display.begin()
+        display.clear()
+        display.display()
 
         self.dim()
-        self.disp.image(display_image)
-        self.disp.display()
+        display.image(display_image)
+        display.display()
 
 
 rdb = Database(host='127.0.0.1')
