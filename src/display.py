@@ -1,24 +1,17 @@
 import time
+import Adafruit_SSD1306
+import RPi.GPIO as GPIO
 
 from db             import Database
 from log            import log
 from PIL            import Image, ImageDraw, ImageFont
-
+from Adafruit_GPIO  import I2C
 from airports       import get_airports
 
-# Try and import the hardware specific imports
-try:
-    import Adafruit_SSD1306
-    import RPi.GPIO as GPIO
-    from Adafruit_GPIO  import I2C
-except Exception as e:
-    log.error(f"Error:{e} importing hardware settings")
-    hardware = False
-else:
-    # Set up the lights sensor
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(4, GPIO.IN)
-    hardware = True
+
+# Set up the lights sensor
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN)
 
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
@@ -30,12 +23,9 @@ backcolor = 0                                   # 0 = Black, background color fo
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
 displays = 8
 
-try:
-    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
-    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
-    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
-except Exception as e:
-    log.error(f"Error:{e} loading fonts")
+boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
+regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
+arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
 
 
 def winddir(wndir=0):
@@ -68,21 +58,19 @@ class Display:
     """
     Class to control a single display
     """
-    width = 0
-    height = 0
+    width = None
+    height = None
     disp = None
     tca = None
     available = False
 
     def __init__(self):
-
         """
-        This initialize the multiplexor and OLED displays. You need to set the multiplexer before you write to
-        the display. Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
+        Control each OLED and the multiplexor. You need to set the multiplexer before you write to the display
+        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
         """
         self.tca = I2C.get_i2c_device(address=0x70)              #
-        self.current_channel = 1
-        self.select(1)
+        self.select(0)
 
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
@@ -168,6 +156,10 @@ class Display:
         self.disp.display()
 
 
+rdb = Database(host='127.0.0.1')
+oleds = Display()
+
+
 def draw_display(draw, wind, width, height):
     """
     Draw a display from wind data
@@ -184,7 +176,7 @@ def draw_display(draw, wind, width, height):
     # Draw wind direction using arrows
     if direction := wind.get('direction'):
         try:
-            arrow_direction = winddir(int(direction))   # Make sure its an int for direction
+            arrow_direction = winddir(int(direction))   # Make sure it an int for direction
         except Exception as e:
             log.error(f"Error:{e} getting wind direction {direction}")
         else:
@@ -204,16 +196,6 @@ def draw_display(draw, wind, width, height):
     draw.text((x, y), txt, align='center', font=regfont, fill=0)
     return
 
-try:
-    rdb = Database(host='127.0.0.1')
-except Exception as e:
-    log.error(f"Error:{e} initializing the database")
-
-try:
-    oleds = Display()
-except Exception as e:
-    log.error(f"Error:{e} opening displays")
-
 
 def main(file_name):
     """
@@ -222,9 +204,11 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
+    if oleds.available:
+        image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
+        draw = ImageDraw.Draw(image)
 
     while True:
-        log.info(f"Starting")
         winds = []
         for station in station_ids:
             if station == "LGND":
@@ -240,17 +224,12 @@ def main(file_name):
                 winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
-        try:
-            # Make sure to create image with mode '1' for 1-bit color.
-            image = Image.new('1', (oleds.width, oleds.height))
-            draw = ImageDraw.Draw(image)
-        except Exception as e:
-            log.error(f"Error:{e} initializing image")
-            log.info(winds)
-        else:
-            for number, wind in enumerate(winds):
+        for number, wind in enumerate(winds):
+            if oleds.available:
                 draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
+            else:
+                log.info(wind)
 
         time.sleep(60)
 
