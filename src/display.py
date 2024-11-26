@@ -174,9 +174,12 @@ class Display:
 
 rdb = Database(host='127.0.0.1')
 oleds = Display(0)
-if oleds.available:
+
+try:
     image = Image.new('1', (oleds.width, oleds.height))    # Make sure to create image with mode '1' for 1-bit color.
     draw = ImageDraw.Draw(image)
+except Exception as e:
+    log.error(f"Error:{e} loading fonts")
 
 
 def draw_display(draw, wind, width, height):
@@ -244,11 +247,11 @@ def main(file_name):
             if number == displays:
                 break
 
-            if oleds.available:
+            try:
                 draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
-            else:
-                log.info(wind)
+            except Exception as e:
+                log.error(f"Error:{e} showing display:{number} value:{wind}")
 
         time.sleep(60)
 
