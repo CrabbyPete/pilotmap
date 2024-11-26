@@ -72,8 +72,8 @@ class Display:
         Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
         """
         self.available = True
-        self.width = self.disp.width
-        self.height = self.disp.height
+        self.width = display.width
+        self.height = display.height
 
     def select(self, channel):                 # Used to tell the multiplexer which oled display to send data to.
         self.current_channel = channel
