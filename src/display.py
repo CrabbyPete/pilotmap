@@ -62,18 +62,6 @@ class Display:
     """
     width = None
     height = None
-    disp = None
-    tca = None
-    available = False
-
-    def __init__(self):
-        """
-        Control each OLED and the multiplexor. You need to set the multiplexer before you write to the display
-        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
-        """
-        self.available = True
-        self.width = display.width
-        self.height = display.height
 
     def select(self, channel):                 # Used to tell the multiplexer which oled display to send data to.
         self.current_channel = channel
@@ -198,9 +186,11 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
-    if oleds.available:
+    try:
         image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
         draw = ImageDraw.Draw(image)
+    except Exception as e:
+        log.error(f"Error:{e} trying to set up drawing")
 
     while True:
         winds = []
@@ -219,11 +209,8 @@ def main(file_name):
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            if oleds.available:
-                draw_display(draw, wind, oleds.width, oleds.height)
-                oleds.show(number, image)
-            else:
-                log.info(wind)
+            draw_display(draw, wind, display.width, display.height)
+            oleds.show(number, image)
 
         time.sleep(60)
 
