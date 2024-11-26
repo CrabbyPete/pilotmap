@@ -6,19 +6,18 @@ from PIL            import Image, ImageDraw, ImageFont
 
 from airports       import get_airports
 
-# Try and import the hardware specific imports
+# Import hardware imports
 try:
     import Adafruit_SSD1306
     import RPi.GPIO as GPIO
     from Adafruit_GPIO  import I2C
 except Exception as e:
-    log.error(f"Error:{e} importing hardware settings")
-    hardware = False
+    log.error(f"Error:{e} loading hardware imports")
 else:
     # Set up the lights sensor
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(4, GPIO.IN)
-    hardware = True
+
 
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
@@ -35,7 +34,7 @@ try:
     regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
     arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
 except Exception as e:
-    log.error(f"Error:{e} importing fonts")
+    log.error("Error:{e} loading fonts")
 
 
 def winddir(wndir=0):
@@ -74,7 +73,7 @@ class Display:
     tca = None
     available = False
 
-    def __init__(self, channel=0):
+    def __init__(self, channel):
 
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
@@ -166,6 +165,11 @@ class Display:
         self.disp.display()
 
 
+rdb = Database(host='127.0.0.1')
+oleds = Display(0)
+if oleds.available:
+    image = Image.new('1', (oleds.width, oleds.height))    # Make sure to create image with mode '1' for 1-bit color.
+    draw = ImageDraw.Draw(image)
 
 
 def draw_display(draw, wind, width, height):
@@ -204,7 +208,6 @@ def draw_display(draw, wind, width, height):
     draw.text((x, y), txt, align='center', font=regfont, fill=0)
     return
 
-rdb = Database(host='127.0.0.1')
 
 def main(file_name):
     """
@@ -213,10 +216,6 @@ def main(file_name):
     :return: None
     """
     station_ids = get_airports(file_name)
-    if hardware:
-        oleds = Display()
-        image = Image.new('1', (oleds.width, oleds.height))         # Make sure to create image with mode '1' for 1-bit color.
-        draw = ImageDraw.Draw(image)
 
     while True:
         winds = []
@@ -224,18 +223,21 @@ def main(file_name):
             if station == "LGND":
                 continue
             station_data = rdb.getall(station)
-
-            wind_gusts = station_data.get('wind_gust_kt')
-            wind_dir   = station_data.get('wind_dir_degrees')
-            wind_speed = station_data.get('wind_speed_kt')
-            if not wind_speed:
-                winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
-            else:
-                winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
+            if station_data:
+                wind_gusts = station_data.get('wind_gust_kt')
+                wind_dir   = station_data.get('wind_dir_degrees')
+                wind_speed = station_data.get('wind_speed_kt')
+                if not wind_speed:
+                    winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
+                else:
+                    winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            if hardware:
+            if number == displays:
+                break
+
+            if oleds.available:
                 draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
             else:
