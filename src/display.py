@@ -73,23 +73,30 @@ class Display:
     tca = None
     available = False
 
-    def __init__(self, channel):
-
+    def __init__(self, channel=0):
+        """
+        Initialize the display.
+        :param channel: channel number to start with
+        """
+        """
+        This is the multiplexor. You need to set it before you write to the display
+        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
+        """
+        try:
+            self.tca = I2C.get_i2c_device(address=0x70)              #
+            self.current_channel = channel
+            self.select(channel)
+        except Exception as e:
+            log.error(f"Error:{e} trying to set the multiplexer")
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
         except Exception as e:
             log.error(f"Error: {e} initializing OLED displays")
             return
+
         self.available = True
         self.width = self.disp.width
         self.height = self.disp.height
-        """
-        This is the multiplexor. You need to set it before you write to the display
-        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
-        """
-        self.tca = I2C.get_i2c_device(address=0x70)              #
-        self.current_channel = channel
-        self.select(channel)
 
     def select(self, channel):                 # Used to tell the multiplexer which oled display to send data to.
         self.current_channel = channel
