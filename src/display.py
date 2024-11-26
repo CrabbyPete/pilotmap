@@ -74,7 +74,7 @@ class Display:
     tca = None
     available = False
 
-    def __init__(self, channel):
+    def __init__(self, channel=0):
 
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
