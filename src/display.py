@@ -6,18 +6,19 @@ from PIL            import Image, ImageDraw, ImageFont
 
 from airports       import get_airports
 
-# Import hardware imports
+# Try and import the hardware specific imports
 try:
     import Adafruit_SSD1306
     import RPi.GPIO as GPIO
     from Adafruit_GPIO  import I2C
 except Exception as e:
-    log.error(f"Error:{e} loading hardware imports")
+    log.error(f"Error:{e} importing hardware settings")
+    hardware = False
 else:
     # Set up the lights sensor
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(4, GPIO.IN)
-
+    hardware = True
 
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
@@ -28,6 +29,13 @@ fontindex = 0                                   # Font selected may have various
 backcolor = 0                                   # 0 = Black, background color for OLED display. Shouldn't need to change
 fontcolor = 255                                 # 255 = White, font color for OLED display. Shouldn't need to change
 displays = 8
+
+try:
+    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
+    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
+    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
+except Exception as e:
+    log.error(f"Error:{e} loading fonts")
 
 
 def winddir(wndir=0):
@@ -60,27 +68,22 @@ class Display:
     """
     Class to control a single display
     """
-    width = None
-    height = None
+    width = 0
+    height = 0
     disp = None
     tca = None
     available = False
 
-    def __init__(self, channel=0):
+    def __init__(self):
+
         """
-        Initialize the display.
-        :param channel: channel number to start with
+        This initialize the multiplexor and OLED displays. You need to set the multiplexer before you write to
+        the display. Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
         """
-        """
-        This is the multiplexor. You need to set it before you write to the display
-        Use cmd i2cdetect -y 1 to ensure multiplexer shows up at addr 0x70
-        """
-        try:
-            self.tca = I2C.get_i2c_device(address=0x70)              #
-            self.current_channel = channel
-            self.select(channel)
-        except Exception as e:
-            log.error(f"Error:{e} trying to set the multiplexer")
+        self.tca = I2C.get_i2c_device(address=0x70)              #
+        self.current_channel = 1
+        self.select(1)
+
         try:
             self.disp = Adafruit_SSD1306.SSD1306_128_64(rst=None)    # 128x64 or 128x32
         except Exception as e:
@@ -165,39 +168,6 @@ class Display:
         self.disp.display()
 
 
-rdb = Database(host='127.0.0.1')
-oleds = Display(0)
-
-try:
-    boldfont = ImageFont.truetype('LiberationSerif-Bold.ttf', fontsize, 0)
-except Exception as e:
-    log.error(f"Error: loading boldfont")
-
-try:
-    regfont  = ImageFont.truetype('LiberationSerif-Regular.ttf', fontsize, 0)
-except Exception as e:
-    log.error(f"Error loading regular font")
-
-try:
-    arrows   = ImageFont.truetype('Arrows.ttf', fontsize+2, 0)
-except Exception as e:
-    log.error(f"Error:{e} loading arrow fonts")
-
-
-
-try:
-    image = Image.new('1', (oleds.width, oleds.height))    # Make sure to create image with mode '1' for 1-bit color.
-except Exception as e:
-    log.error(f"Error creating image")
-    image = None
-else:
-    try:
-        draw = ImageDraw.Draw(image)
-    except Exception as e:
-        log.error(f"Error:{e} drawing image")
-        draw = None
-
-
 def draw_display(draw, wind, width, height):
     """
     Draw a display from wind data
@@ -234,6 +204,16 @@ def draw_display(draw, wind, width, height):
     draw.text((x, y), txt, align='center', font=regfont, fill=0)
     return
 
+try:
+    rdb = Database(host='127.0.0.1')
+except Exception as e:
+    log.error(f"Error:{e} initializing the database")
+
+try:
+    oleds = Display()
+except Exception as e:
+    log.error(f"Error:{e} opening displays")
+
 
 def main(file_name):
     """
@@ -244,30 +224,33 @@ def main(file_name):
     station_ids = get_airports(file_name)
 
     while True:
+        log.info(f"Starting")
         winds = []
         for station in station_ids:
             if station == "LGND":
                 continue
             station_data = rdb.getall(station)
-            if station_data:
-                wind_gusts = station_data.get('wind_gust_kt')
-                wind_dir   = station_data.get('wind_dir_degrees')
-                wind_speed = station_data.get('wind_speed_kt')
-                if not wind_speed:
-                    winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
-                else:
-                    winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
+
+            wind_gusts = station_data.get('wind_gust_kt')
+            wind_dir   = station_data.get('wind_dir_degrees')
+            wind_speed = station_data.get('wind_speed_kt')
+            if not wind_speed:
+                winds.append({'station': station, 'speed': -1, 'gusts': wind_gusts, 'direction': wind_dir})
+            else:
+                winds.append({'station': station, 'speed': int(wind_speed), 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
-        for number, wind in enumerate(winds):
-            if number == displays:
-                break
-
-            try:
+        try:
+            # Make sure to create image with mode '1' for 1-bit color.
+            image = Image.new('1', (oleds.width, oleds.height))
+            draw = ImageDraw.Draw(image)
+        except Exception as e:
+            log.error(f"Error:{e} initializing image")
+            log.info(winds)
+        else:
+            for number, wind in enumerate(winds):
                 draw_display(draw, wind, oleds.width, oleds.height)
                 oleds.show(number, image)
-            except Exception as e:
-                log.error(f"Error:{e} showing display:{number} value:{wind}")
 
         time.sleep(60)
 
