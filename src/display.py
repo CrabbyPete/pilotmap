@@ -175,6 +175,7 @@ def draw_display(wind):
             arrow_direction = winddir(int(direction))   # Make sure it an int for direction
         except Exception as e:
             log.error(f"Error:{e} getting wind direction {direction}")
+            return
         else:
             draw.text((96, 37), arrow_direction, font=arrows, outline=255, fill=0)  # Lower right of oled
 

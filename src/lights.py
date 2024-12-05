@@ -108,8 +108,7 @@ def main(file_name):
     # Loop forever to light each LED
     while True:
         blink = []
-        log.info("Starting")
-
+        
         # Check the status of the stations by color
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):

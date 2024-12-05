@@ -37,14 +37,19 @@ def get_airport(station):
     """
     # url = f"https://aviationweather.gov/api/data/airport?ids={station}&format=json"
     url = f"https://aviationweather.gov/api/data/metar?ids={station}&format=json"
-    reply = requests.get(url)
-    if reply.ok:
-        try:
-            data = json.loads(reply.text)
-            if isinstance(data, list):
-                return data[0]
-        except Exception as e:
-            log.error(f"Error {e} translating json:{reply.text}")
+    try:
+        reply = requests.get(url)
+    except Exception as e:
+        log.error(f"Error:{e} trying to open {url}")
+
+    else:
+        if reply.ok:
+            try:
+                data = json.loads(reply.text)
+                if isinstance(data, list):
+                    return data[0]
+            except Exception as e:
+                log.error(f"Error {e} translating json:{reply.text}")
     return {}
 
 
