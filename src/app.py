@@ -1,6 +1,6 @@
 import settings
 
-from flask import Flask, Response, request, render_template
+from flask import Flask, Response, request, render_template, redirect
 
 from db         import Database
 from log        import log
@@ -70,6 +70,29 @@ def ledonoff():
                }
 
     return render_template('apedit.html', **context)
+
+
+@app.route("/shutdown1", methods=["GET", "POST"])
+def shutdown1():
+    url = request.referrer
+    if url is None:
+        url = '/'
+    else:
+        url = url.split('/')[3]
+    log.info("Shutoff Map from " + url)
+    return redirect(url)  # temp[3] holds name of page that called this route.
+
+
+@app.route("/shutoffnow1", methods=["GET", "POST"])
+def shutoffnow1():
+    url = request.referrer
+    if url is None:
+        url = '/'
+    else:
+        url = url.split('/')[3]
+    log.info("Shutoff Map from " + url)
+    return redirect(url)  # temp[3] holds name of page that called this route.
+
 
 @app.route('/confedit', methods=['GET','POST'])
 def configuration():
