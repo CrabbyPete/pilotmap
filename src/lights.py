@@ -60,11 +60,17 @@ def brighten(led:tuple, value:int):
 
     return red, green, blue
 
+
 def get_condition(wx_list:list):
     for wx in wx_list:
         for condition, values in conditions.items():
             if wx in values:
                 return condition
+
+
+def led_off(led, number):
+    strip.set_pixel_color(led, color.black)
+    strip.show_pixels()
 
 
 def main(file_name):
@@ -108,7 +114,7 @@ def main(file_name):
     # Loop forever to light each LED
     while True:
         blink = []
-        
+
         # Check the status of the stations by color
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):

@@ -5,6 +5,7 @@ from flask import Flask, Response, request, render_template
 from db         import Database
 from log        import log
 from config     import color
+from lights     import led_off
 from airports   import get_apinfo
 
 rdb = Database(host='127.0.0.1')
@@ -49,7 +50,7 @@ def ledonoff():
         pass
 
     elif "butoff" in request.form:
-        pass
+        led_off()
 
     elif "butup" in request.form:
         pass
@@ -63,7 +64,7 @@ def ledonoff():
     context = {'airports': airports,
                'title': 'Airports Editor',
                'num': num,
-               'apinfo_dict': get_apinfo(airports)
+               'apinfo_dict': get_apinfo()
                }
 
     return render_template('apedit.html', **context)

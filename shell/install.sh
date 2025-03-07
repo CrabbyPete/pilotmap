@@ -18,5 +18,5 @@ sudo unzip arrows.zip -d /usr/share/fonts/truetype/misc
 
 pip3 install -r ./pilotmap/src/requirements.txt
 chmod +x ./pilotmap/shell/setup.sh
-sudo source ./pilotmap/shell/setup.sh
+sudo . ./pilotmap/shell/setup.sh
 
