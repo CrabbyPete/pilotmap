@@ -5,7 +5,6 @@ from flask import Flask, Response, request, render_template
 from db         import Database
 from log        import log
 from config     import color
-from lights     import led_off
 from airports   import get_apinfo
 
 rdb = Database(host='127.0.0.1')
@@ -50,7 +49,7 @@ def ledonoff():
         pass
 
     elif "butoff" in request.form:
-        led_off()
+        pass
 
     elif "butup" in request.form:
         pass

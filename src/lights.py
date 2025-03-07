@@ -31,6 +31,7 @@ def dim(data,value):
     data =[red,grn,blu]
     return data
 
+
 def brighten(led:tuple, value:int):
     """ Change the brightness of an individual LED
     :param leds: 3 color set of rgb to work with
@@ -157,6 +158,7 @@ def main(file_name):
         saved_colors = [strip.get_pixel(led) for led in blink]
 
         sleep = 0
+
         # Don't change any other led for 30 seconds as we check which to blink
         while True:
             strip.show_pixels()
@@ -170,6 +172,7 @@ def main(file_name):
             sleep += .5
             if sleep > 30:
                 break
+
 
 if __name__ == "__main__":
     import argparse
