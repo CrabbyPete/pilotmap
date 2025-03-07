@@ -45,6 +45,9 @@ def landing():
 def ledonoff():
     num = int(request.form.get('lednum'))
 
+    with open('airports', 'r') as fyle:
+        airports = [line.strip().replace('\n','') for line  in fyle.readlines()]
+
     if "buton" in request.form:
         pass
 
@@ -117,8 +120,6 @@ def airports():
         saved_airports = rdb.getall()
         for led, airport in enumerate(airports):
             pass
-
-
 
 
 @app.route("/run/{command}")
