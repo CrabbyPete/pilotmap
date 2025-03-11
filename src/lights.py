@@ -68,10 +68,12 @@ def get_condition(wx_list:list):
             if wx in values:
                 return condition
 
+time_to_die = False
 
-def led_off(led, number):
-    strip.set_pixel_color(led, color.black)
-    strip.show_pixels()
+def signal_handler(signum, frame):
+    global time_to_die
+    log.info(f"Signal:{signum}")
+    time_to_die = True
 
 
 def main(file_name):
@@ -113,7 +115,7 @@ def main(file_name):
             legend_index += 1
 
     # Loop forever to light each LED
-    while True:
+    while not time_to_die:
         blink = []
 
         # Check the status of the stations by color
@@ -159,9 +161,8 @@ def main(file_name):
         saved_colors = [strip.get_pixel(led) for led in blink]
 
         sleep = 0
-
         # Don't change any other led for 30 seconds as we check which to blink
-        while True:
+        while not time_to_die:
             strip.show_pixels()
             for index, led in enumerate(blink):
                 if strip.get_pixel(led) == 0:
@@ -174,6 +175,8 @@ def main(file_name):
             if sleep > 30:
                 break
 
+    # You got a signal to die
+    strip.clear_pixels()
 
 if __name__ == "__main__":
     import argparse

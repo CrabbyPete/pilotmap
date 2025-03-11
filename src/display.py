@@ -11,8 +11,9 @@ try:
     import Adafruit_SSD1306
     import RPi.GPIO as GPIO
     from Adafruit_GPIO  import I2C
-except ImportError:
-    pass
+except ImportError as e:
+    log.error(f"Error:{e} import modules")
+
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
