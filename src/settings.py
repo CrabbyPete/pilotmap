@@ -1,6 +1,7 @@
 #config.py - use web based configurator to make changes unless you are comfortable doing it manually
+
 autorun = 1
-LED_COUNT = 183
+LED_COUNT = 180
 legend = 1
 max_wind_speed = 15
 update_interval = 15

@@ -387,49 +387,49 @@
 
     <tr>
         <td><b>VFR Flight Category = </b>
-        <td><input type="color" style="float:left" name="color_vfr" id={{ settings.color_vfr }} size=10 value = {{ rgbhex(color.vfr) }}>
+        <td><input type="color" style="float:left" name="color_vfr" id={{ settings.color_vfr }} size=10 value = {{ color_vfr_hex }}>
         <td>VFR is designated by GREEN (0,255,0).
     </tr>
 
     <tr>
         <td><b>MVFR Flight Category = </b>
-        <td><input type="color" style="float:left" name="color_mvfr" id={{ settings.color_mvfr }} size=10 value = {{ rgbhex(color.mvfr) }}>
+        <td><input type="color" style="float:left" name="color_mvfr" id={{ settings.color_mvfr }} size=10 value = {{ color_mvfr_hex }}>
         <td>MVFR is designated by BLUE (0,0,255).
     </tr>
 
     <tr>
         <td><b>IFR Flight Category = </b>
-        <td><input type="color" style="float:left" onload="hex2rgb(this)" name="color_ifr" id={{ settings.color_ifr }} size=10 value = {{ rgbhex(color.ifr) }}>
+        <td><input type="color" style="float:left" onload="hex2rgb(this)" name="color_ifr" id={{ settings.color_ifr }} size=10 value = {{ color_ifr_hex }}>
         <td>IFR is designated by RED (255,0,0).
     </tr>
 
     <tr>
         <td><b>LIFR Flight Category = </b>
-        <td><input type="color" style="float:left" name="color_lifr" id={{ settings.color_lifr }} size=10 value = {{ rgbhex(color.lifr) }}>
+        <td><input type="color" style="float:left" name="color_lifr" id={{ settings.color_lifr }} size=10 value = {{ color_lifr_hex }}>
         <td>LIFR is designated by Magenta (255,0,255).
     </tr>
 
     <tr>
         <td><b>No Weather Reported = </b>
-        <td><input type="color" style="float:left" name="color_nowx" id={{ settings.color_nowx }} size=10 value = {{ rgbhex(color.nowx) }}>
+        <td><input type="color" style="float:left" name="color_nowx" id={{ settings.color_nowx }} size=10 value = {{ color_nowx_hex }}>
         <td>No Weather (nowx) is typically designated by GRAY (80,80,80) or BLACK (0,0,0).
     </tr>
 
     <tr>
         <td><b>Black/Off = </b>
-        <td><input type="color" style="float:left" name="color_black" size=10 id={{ settings.color_black }} value = {{ rgbhex(color.black) }}>
+        <td><input type="color" style="float:left" name="color_black" size=10 id={{ settings.color_black }} value = {{ color_black_hex }}>
         <td>Black/Off is designated by BLACK (0,0,0).
     </tr>
 
     <tr>
         <td><b>Lightning = </b>
-        <td><input type="color" style="float:left" name="color_lghtn" size=10 id={{ settings.color_lghtn }} value = {{ rgbhex(color.lightning) }}>
+        <td><input type="color" style="float:left" name="color_lghtn" size=10 id={{ settings.color_lghtn }} value = {{ color_lghtn_hex }}>
         <td>Lightning is typically designated by YELLOW (255,255,0).
     </tr>
     
     <tr>
         <td><b>Snow1 Reported = </b>
-        <td><input type="color" style="float:left" name="color_snow1" size=10 id={{ settings.color_snow1 }} value = {{ rgbhex(color.snow) }}>
+        <td><input type="color" style="float:left" name="color_snow1" size=10 id={{ settings.color_snow1 }} value = {{ color_snow1_hex }}>
         <td>Snow1 Reported is typically designated by WHITE (255,255,255). 
     </tr>
 
@@ -441,7 +441,7 @@
 
     <tr>
         <td><b>Rain1 Reported = </b>
-        <td><input type="color" style="float:left" name="color_rain1" size=10 id={{ settings.color_rain1 }} value = {{ rgbhex(color.rain) }}>
+        <td><input type="color" style="float:left" name="color_rain1" size=10 id={{ settings.color_rain1 }} value = {{ color_rain1_hex }}>
         <td>Rain1 Reported is typically designated by DARK BLUE (4,0,54). 
     </tr>
 
@@ -453,7 +453,7 @@
 
     <tr>
         <td><b>Freezing Rain1 Reported = </b>
-        <td><input type="color" style="float:left" name="color_frrain1" size=10 id={{ settings.color_frrain1 }} value = {{ rgbhex(color.freezing_rain) }}>
+        <td><input type="color" style="float:left" name="color_frrain1" size=10 id={{ settings.color_frrain1 }} value = {{ color_frrain1_hex }}>
         <td>Freezing Rain1 Reported is typically designated by LIGHT PURPLE (199,156,219). 
     </tr>
 
@@ -465,7 +465,7 @@
 
     <tr>
         <td><b>Dust, Sand, Ash1 Reported = </b>
-        <td><input type="color" style="float:left" name="color_dustsandash1" size=10 id={{ settings.color_dustsandash1 }} value = {{ rgbhex(color.dust_and_ash) }}>
+        <td><input type="color" style="float:left" name="color_dustsandash1" size=10 id={{ settings.color_dustsandash1 }} value = {{ color_dustsandash1_hex }}>
         <td>Dust, Sand or Ash1 Reported is typically designated by BROWN (200,150,125). 
     </tr>
 
@@ -477,7 +477,7 @@
 
     <tr>
         <td><b>Fog1 Reported = </b>
-        <td><input type="color" style="float:left" name="color_fog1" size=10 id={{ settings.color_fog1 }} value = {{ rgbhex(color.fog) }}>
+        <td><input type="color" style="float:left" name="color_fog1" size=10 id={{ settings.color_fog1 }} value = {{ color_fog1_hex }}>
         <td>Fog1 Reported is typically designated by SILVER (80,80,80). 
     </tr>
 
@@ -489,7 +489,7 @@
 
     <tr>
         <td><b>Home Airport Marker Color = </b>
-        <td><input type="color" style="float:left" name="color_homeport" size=10 id={{ settings.color_homeport }} value = {{ rgbhex(color.homeport) }}>
+        <td><input type="color" style="float:left" name="color_homeport" size=10 id={{ settings.color_homeport }} value = {{ color_homeport_hex }}>
         <td>Home Airport Marker Color can be any color that stands out from the rest to denote the home airport.
     </tr>
 

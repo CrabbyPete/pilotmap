@@ -1,4 +1,5 @@
 from  dataclasses import dataclass, asdict
+LED_COUNT = 13
 
 @dataclass
 class LEDColors:
