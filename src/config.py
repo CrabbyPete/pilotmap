@@ -1,24 +1,23 @@
-from  dataclasses import dataclass, asdict
-LED_COUNT = 13
+from  dataclasses import dataclass, asdict, fields
 
 @dataclass
 class LEDColors:
-    vfr =           (0, 255, 0)
-    mvfr =          (0, 0, 255)
-    ifr =           (255, 0, 0)
-    lifr =          (255, 0, 255)
-    nowx =          (80, 80, 80)
-    black =         (0, 0, 0)
-    lightning =     (255, 255, 0)
-    snow  =         (255, 255, 255)
-    snow2 =         (100, 100, 100)
-    rain  =         (4, 0, 54)
-    rain2 =         (0, 0, 255)
-    freezing_rain  =(199, 156, 219)
-    freezing_rain2 =(152, 0, 199)
-    dust_and_ash =  (157, 111, 88)
-    fog  =          (80, 80, 80)
-    homeport =      (214, 14, 52)
+    vfr: tuple           = (0, 255, 0)
+    mvfr: tuple          = (0, 0, 255)
+    ifr: tuple           = (255, 0, 0)
+    lifr: tuple          = (255, 0, 255)
+    nowx: tuple          = (80, 80, 80)
+    black: tuple         = (0, 0, 0)
+    lightning: tuple     = (255, 255, 0)
+    snow: tuple          = (255, 255, 255)
+    snow2: tuple         = (100, 100, 100)
+    rain: tuple          = (4, 0, 54)
+    rain2: tuple         = (0, 0, 255)
+    freezing_rain: tuple = (199, 156, 219)
+    freezing_rain2: tuple = (152, 0, 199)
+    dust_and_ash: tuple   = (157, 111, 88)
+    fog: tuple           = (80, 80, 80)
+    homeport: tuple      = (214, 14, 52)
 
     def dict(self, value):
         try:
@@ -26,8 +25,12 @@ class LEDColors:
         except AttributeError:
             return None
 
+    def __iter__(self):
+        for k,v in asdict(self).items():
+            yield k,v
 
 color = LEDColors()
+
 
 # Conditions as defined by
 conditions = {

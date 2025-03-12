@@ -5,7 +5,8 @@ class Database(object):
     """ Redis database object
     """
     def __init__(self, host="127.0.0.1", port=6379, db=0):
-        self.rdb = redis.Redis( host, port, db)
+        self.rdb = redis.Redis( host, port,  db)
+
 
     def set_values(self,values):
         """ Set one key value

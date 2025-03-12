@@ -68,6 +68,7 @@ def get_condition(wx_list:list):
             if wx in values:
                 return condition
 
+
 time_to_die = False
 
 def signal_handler(signum, frame):
@@ -75,13 +76,13 @@ def signal_handler(signum, frame):
     log.info(f"Signal:{signum}")
     time_to_die = True
 
-
 def main(file_name):
     """
     Main program to manage the lights
     :return:
     """
     station_ids = get_airports(file_name)
+    light_state = {}
 
     legend = {"VFR":None,
               "MVFR":None,

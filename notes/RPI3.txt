@@ -1,10 +1,2 @@
 https://github.com/jgarff/rpi_ws281x/issues/483
-
-
-    {
-        .hwver  = 0x9020e1,
-        .type = RPI_HWVER_TYPE_PI2,
-        .periph_base = PERIPH_BASE_RPI2,
-        .videocore_base = VIDEOCORE_BASE_RPI2,
-        .desc = "Raspberry Pi 3 Model A Plus Rev 1.1",
-    }
+https://github.com/jgarff/rpi_ws281x/pull/531/commits/9798a654e9404b303a89e461996f421c43bf1869
