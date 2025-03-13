@@ -130,6 +130,7 @@ def main(file_name):
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):
                 if station == 'LGND':
+                    log.info(f"LGND:{legend_index} = led:{led}")
                     if legend_index == 0:
                         set_light(led, 'vfr')
                     elif legend_index == 1:
