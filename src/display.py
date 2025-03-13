@@ -147,7 +147,7 @@ class Display:
         display.image(display_image)
         display.display()
 
-rdb = Database(host='127.0.0.1')
+rdb = Database()
 
 try:
     oleds = Display()

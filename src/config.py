@@ -26,8 +26,10 @@ class LEDColors:
             return None
 
     def __iter__(self):
-        for k,v in asdict(self).items():
+        d = asdict(self)
+        for k,v in d.items():
             yield k,v
+
 
 color = LEDColors()
 

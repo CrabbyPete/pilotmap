@@ -134,7 +134,7 @@ def main(file_name=None):
             log.error(f"Error:{e} putting {station_data} for station {station} in the db")
 
         try:
-            rdb.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
+            rdb.geoadd('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} geodata for station {station} in the db")
 

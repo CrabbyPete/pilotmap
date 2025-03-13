@@ -25,8 +25,17 @@ from flask     import Flask, render_template, request, flash, redirect, send_fil
 # Local imports
 import admin
 import config
-#import scan_network
 from log  import log as logger
+from db import Database
+from colors import Colors
+
+LED_OFF = True
+LED_ON  = False
+
+rdb = Database()
+color = Colors(rdb)
+
+"""
 from leds import LedStrip
 
 try:
@@ -34,6 +43,8 @@ try:
 except ImportError as e:
     def Color(r,g,b):
         return r,g,b
+"""
+
 
 PATH = '.'
 airports_file  = f'{PATH}/airports'
@@ -87,7 +98,7 @@ num = 0                         # initialize num for airports editor
 ipadd = ''
 
 
-strip = LedStrip(config.LED_COUNT)
+#strip = LedStrip(config.LED_COUNT)
 
 
 # Initiate flash session
@@ -543,7 +554,7 @@ def index ():
         'airports': airports,
         'settings': settings,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'num': num,
         'apinfo_dict': apinfo_dict,
@@ -594,10 +605,9 @@ def downloadhm ():
 @app.route("/hmedit", methods=["GET", "POST"])
 def hmedit():
     logger.info("Opening hmedit.html")
-    global strip
+    #global strip
     global num
     global ipadd
-    global strip
     global ipaddresses
     global map_name
 
@@ -609,7 +619,7 @@ def hmedit():
         'title': 'Heat Map Editor-'+version,
         'hmdata': hmdata,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -627,7 +637,7 @@ def hmedit():
 def handle_hmpost_request():
     logger.info("Saving Heat Map Data File")
     global hmdata
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -686,7 +696,7 @@ def importhm():
         'title': 'Heat Map Editor-'+version,
         'hmdata': hmdata,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -720,7 +730,7 @@ def apedit():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -758,7 +768,7 @@ def numap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -778,7 +788,7 @@ def handle_appost_request():
     logger.info("Saving Airport File")
     global airports
     global hmdata
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -815,58 +825,63 @@ def handle_appost_request():
 def ledonoff():
     logger.info("Controlling LED's on/off")
     global airports
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
     global timestr
 
+    """
     for i in range(strip.number):
         strip.set_pixel_color(i, Color(0,0,0))
     strip.show_pixels()
+    """
 
     if request.method == "POST":
-
         readairports(airports_file)
 
         if "buton" in request.form:
             num = int(request.form['lednum'])
             logger.info("LED " + str(num) + " On")
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            color.switch_led(num,LED_ON)
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' On')
 
         elif "butoff" in request.form:
             num = int(request.form['lednum'])
             logger.info("LED " + str(num) + " Off")
-            strip.set_pixel_color(num, Color(0,0,0))
-            strip.show_pixels()
+            color.switch_led(num, LED_OFF)
+            #strip.set_pixel_color(num, Color(0,0,0))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' Off')
 
         elif "butup" in request.form:
             logger.info("LED UP")
             num = int(request.form['lednum'])
-            strip.set_pixel_color(num, Color(0,0,0))
+            #strip.set_pixel_color(num, Color(0,0,0))
             num = num + 1
 
             if num > len(airports):
                 num = len(airports)
 
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' should be On')
 
         elif "butdown" in request.form:
             logger.info("LED DOWN")
             num = int(request.form['lednum'])
-            strip.set_pixel_color(num, Color(0,0,0))
+            color.switch_led(num, LED_OFF)
+            #strip.set_pixel_color(num, Color(0,0,0))
 
             num = num - 1
             if num < 0:
                 num = 0
 
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            color.switch_led(num, LED_ON)
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' should be On')
 
         elif "butall" in request.form:
@@ -874,8 +889,9 @@ def ledonoff():
             num = int(request.form['lednum'])
 
             for num in range(len(airports)):
-                strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+                color.switch_led(num, LED_ON)
+                #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('All LEDs should be On')
             num=0
 
@@ -884,8 +900,9 @@ def ledonoff():
             num = int(request.form['lednum'])
 
             for num in range(len(airports)):
-                strip.set_pixel_color(num, Color(0,0,0))
-            strip.show_pixels()
+                color.switch_led(num, LED_OFF)
+                #strip.set_pixel_color(num, Color(0,0,0))
+            #strip.show_pixels()
             flash('All LEDs should be Off')
             num=0
 
@@ -898,7 +915,7 @@ def ledonoff():
         'title': 'Airports File Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -940,7 +957,7 @@ def importap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
