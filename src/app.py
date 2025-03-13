@@ -28,6 +28,7 @@ import config
 from log  import log as logger
 from db import Database
 from colors import Colors
+from airports import get_airport_info
 
 LED_OFF = True
 LED_ON  = False
@@ -725,7 +726,6 @@ def apedit():
     readairports(airports_file)  # Read airports file.
 
     logger.debug(ipadd)  # debug to display ip address on console
-
     templateData = {
         'title': 'Airports Editor-'+version,
         'airports': airports,
@@ -737,7 +737,7 @@ def apedit():
         'current_timezone': current_timezone,
         'update_available': update_available,
         'update_vers': update_vers,
-        'apinfo_dict': apinfo_dict,
+        'apinfo_dict': get_airport_info(), # PJD apinfo_dict,
         'machines': machines,
         'map_name':map_name
     }
@@ -1621,6 +1621,7 @@ def get_led_map_info():
     min_lon = min(lon_list)
 
 # routine to capture airport information and pass along to web pages.
+
 def get_apinfo():
     logger.debug('In Get_Apinfo Routine')
 

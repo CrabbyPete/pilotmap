@@ -207,7 +207,7 @@ def main(file_name):
         for station in station_ids:
             if station == "LGND":
                 continue
-            station_data = rdb.getall(station)
+            station_data = rdb.hget(station)
 
             wind_gusts = station_data.get('wind_gust_kt')
             wind_dir   = station_data.get('wind_dir_degrees')
