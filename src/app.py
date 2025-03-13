@@ -32,7 +32,7 @@ from colors import Colors
 LED_OFF = True
 LED_ON  = False
 
-rdb = Database()
+rdb = Database('192.168.1.163')
 color = Colors(rdb)
 
 """

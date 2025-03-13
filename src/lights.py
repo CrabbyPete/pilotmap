@@ -71,6 +71,7 @@ def signal_handler(signum, frame):
 def set_light(led, color_str):
     if colors.is_off(led):
         clr = (0,0,0)
+        log.info(f"LED:{led} is off")
 
     if isinstance(color_str, str):
         try:
