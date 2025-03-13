@@ -14,7 +14,11 @@ class Colors:
 
     def get(self, clr):
         clr = self.rdb.hget('color', clr)
-        return eval(clr)
+        try:
+            color_val = eval(clr)
+        except Exception as e:
+            log.error(f"Error:{e} trying to eval({clr}")
+        return None
 
     def put(self, clr, value):
         self.rdb.hset('color', clr, str(value))

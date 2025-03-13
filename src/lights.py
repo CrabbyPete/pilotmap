@@ -74,13 +74,15 @@ def set_light(led, color_str):
 
     elif isinstance(color_str,tuple): # Brighten and dim send a straight tuple
         clr = color_str
+
     else:
         try:
             clr = colors.get(color_str)
         except Exception as e:
             log.error(f"Error:{e} getting color:{color_str}")
 
-    strip.set_pixel_color(led, clr)
+    if clr:
+        strip.set_pixel_color(led, clr)
 
 
 def main(file_name):
