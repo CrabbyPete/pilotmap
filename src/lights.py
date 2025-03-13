@@ -126,8 +126,21 @@ def main(file_name):
         blink = []
 
         # Check the status of the stations by color
+        legend_index = 0
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):
+                if station == 'LGND':
+                    if legend_index == 0:
+                        set_light(led, 'vfr')
+                    elif legend_index == 1:
+                        set_light(led, 'mvfr')
+                    elif legend_index == 2:
+                        set_light(led, 'ifr')
+                    elif legend_index == 3:
+                        set_light(led, 'lifr')
+                    elif legend_index == 4:
+                        set_light(led, 'nowx')
+                    legend_index += 1
                 continue
 
             station_data = rdb.hgetall(station)
@@ -183,7 +196,7 @@ def main(file_name):
 
             time.sleep(.5)
             sleep += .5
-            if sleep > 30:
+            if sleep > 10:
                 break
 
     # You got a signal to die
