@@ -82,7 +82,7 @@ def get_station(station):
         return metars
 
 
-def main(file_name=None):
+def weather(file_name=None):
     """
     Main routine. Schedule to run every 5 minutes
     :param: file_name: str: airport file
@@ -146,6 +146,6 @@ if __name__ == "__main__":
     parser.add_argument('--file','-f', nargs='?')
     args = parser.parse_args()
     if not args.file:
-        main('src/airports')
+        weather('./airports')
     else:
-        main(args.file)
+        weather(args.file)

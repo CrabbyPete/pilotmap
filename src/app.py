@@ -29,6 +29,7 @@ from log  import log as logger
 from db import Database
 from colors import Colors
 from airports import get_airport_info
+from weather import weather
 
 LED_OFF = True
 LED_ON  = False
@@ -710,7 +711,7 @@ def importhm():
     flash('Heat Map Imported - Click "Save Heat Map File" to save')
     return render_template("hmedit.html", **templateData)
 
-
+"""
 # Routes for Airport Editor
 @app.route("/apedit", methods=["GET", "POST"])
 def apedit():
@@ -742,6 +743,49 @@ def apedit():
         'map_name':map_name
     }
     return render_template('apedit.html', **templateData)
+"""
+@app.route('/apedit', methods=["GET", "POST"])
+def airports():
+    """
+    Airports Editor
+    :return:
+    """
+    if request.method == "GET":
+        with open('airports', 'r') as fyle:
+            airports = [line.strip().replace('\n','') for line  in fyle.readlines()]
+    elif request.method == "POST":
+            airports = request.form.to_dict().values()
+            with open('airports', 'w') as fyle:
+                for airport in airports:
+                    fyle.write(f"{airport}\r\n")
+
+            command = "sudo systemctl start weather"
+            ok = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            command = "sudo systemctl restart lights"
+            ok = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    apinfo_dict = get_airport_info(airports)
+    templateData = {
+        'title': 'Airports Editor-'+version,
+        'airports': airports,
+        'ipadd': ipadd,
+        #'strip': strip,
+        'ipaddresses': ipaddresses,
+        'timestr': timestr,
+        'num': num,
+        'current_timezone': current_timezone,
+        'update_available': update_available,
+        'update_vers': update_vers,
+        'apinfo_dict': apinfo_dict,
+        'machines': machines,
+        'map_name':map_name
+    }
+
+    return render_template('apedit.html', **templateData)
+
+
+
 
 
 @app.route("/numap", methods=["GET", "POST"])

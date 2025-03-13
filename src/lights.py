@@ -73,7 +73,7 @@ def set_light(led, color_str):
         clr = (0,0,0)
         log.info(f"LED:{led} is off")
 
-    if isinstance(color_str, str):
+    elif isinstance(color_str, str):
         try:
             clr = colors.get(color_str)
         except Exception as e:
@@ -202,6 +202,7 @@ def main(file_name):
 
     # You got a signal to die
     strip.clear_pixels()
+
 
 if __name__ == "__main__":
     import argparse
