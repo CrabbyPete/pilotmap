@@ -18,7 +18,8 @@ class Colors:
             color_val = eval(clr)
         except Exception as e:
             log.error(f"Error:{e} trying to eval({clr}")
-        return None
+            return (0,0,0)
+        return color_val
 
     def put(self, clr, value):
         self.rdb.hset('color', clr, str(value))
