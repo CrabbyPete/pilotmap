@@ -18,6 +18,7 @@ colors = Colors(rdb)
 
 strip = LedStrip(183)
 strip.clear_pixels()
+strip.show_pixels()
 
 
 def brighten(led:tuple, value:int):
@@ -82,6 +83,7 @@ def set_light(led, color_str):
         clr = color_str
 
     strip.set_pixel_color(led, clr)
+    strip.show_pixels()
 
 
 def main(file_name):
@@ -156,6 +158,7 @@ def main(file_name):
                 wx_condition = get_condition(wx_string.split())
                 led_color = color.dict(wx_condition)
                 blink.append(led)
+                log.info(f"{station} WX:{wx_condition}")
 
             lng = station_data.get('longitude')
             lat = station_data.get('latitude')
