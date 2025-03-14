@@ -180,7 +180,7 @@ def main(file_name):
             else:
                 led_color = brighten(led_color, -50)
 
-            log.info(f"Light:{led}={led_color}")
+            log.info(f"{station} led:{led}={led_color}")
             set_light(led, led_color)
 
         saved_colors = [strip.get_pixel(led) for led in blink]
