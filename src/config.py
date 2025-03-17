@@ -39,7 +39,7 @@ conditions = {
     'lightning': ["TS", "TSRA", "TSGR", "+TSRA", "TSRG", "FC", "SQ", "VCTS", "VCTSRA", "VCTSDZ", "LTG"],
     'snow': ["BLSN", "DRSN", "-RASN", "RASN", "+RASN", "-SN", "SN", "+SN", "SG", "IC", "PE", "PL", "-SHRASN", "SHRASN",
              "+SHRASN", "-SHSN", "SHSN", "+SHSN"],
-    'rain': ["-DZ", "DZ", "+DZ", "-DZRA", "DZRA", "-RA", "RA", "+RA", "-SHRA", "SHRA", "+SHRA", "VIRGA", "VCSH"],
+    'rain': ["-DZ", "DZ", "+DZ", "-DZRA", "DZRA", "-RA", "RA", "+RA", "-SHRA", "SHRA", "+SHRA", "VIRGA", "VCSH", "UP"],
     'freezing_rain': ["-FZDZ", "FZDZ", "+FZDZ", "-FZRA", "FZRA", "+FZRA"],
     'dust_and_ash': ["DU", "SA", "HZ", "FU", "VA", "BLDU", "BLSA", "PO", "VCSS", "SS", "+SS"],
     'fog': ["BR", "MIFG", "VCFG", "BCFG", "PRFG", "FG", "FZFG"]

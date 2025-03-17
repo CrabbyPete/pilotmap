@@ -4,6 +4,6 @@ sudo wget -O /etc/apt/trusted.gpg.d/nymea.gpg https://repository.nymea.io/nymea.
 sudo apt-get update
 sudo apt-get install nymea-networkmanager dirmngr
 
-systemctl enable nymea-networkmanger
+sudo systemctl enable nymea-networkmanger
 
 sudo systemctl disable dhcpcd

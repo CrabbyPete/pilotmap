@@ -97,7 +97,7 @@ def weather(file_name=None):
     # Get the latest METAR data from the API
     metar_data = get_metars()
 
-    # Set the LEDs for each value
+    # Ignore Legend values
     for led, station in enumerate(station_ids):
         if station in ("NULL", "LGND", ""):
             continue
@@ -139,6 +139,7 @@ def weather(file_name=None):
             log.error(f"Error:{e} putting {station_data} geodata for station {station} in the db")
 
     log.info(f"Ending at {arrow.now()}")
+
 
 if __name__ == "__main__":
     import argparse

@@ -2,8 +2,8 @@
 Description=Web App Service
 
 [Service]
-WorkingDirectory=/home/pi/livesectional/livesectional
-ExecStart=/usr/bin/uwsgi -i /home/pi/livesectional/livesectional/uwsgi.ini
+WorkingDirectory=/usr/local/src
+ExecStart=/home/pi/venv/bin/uwsgi  -i /usr/local/src/uwsgi.ini
 SyslogIdentifier=SRV_APPS
 Restart=always
 RestartSec=30
