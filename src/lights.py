@@ -7,9 +7,9 @@ from suntime    import Sun
 
 from db         import Database
 from log        import log
-from leds       import LedStrip
 from colors     import Colors
 from config     import color, conditions
+from hardware   import LedStrip
 from airports   import get_airports
 
 
@@ -28,6 +28,7 @@ def brighten(led:tuple, value:int):
     :return: set of new rgb values
     """
     ratio = abs(value)/100.
+    red = green = blue = 0
     if value < 0:
         try:
             red = led[0] - int(led[0] * ratio)

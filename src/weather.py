@@ -144,7 +144,7 @@ def weather(file_name=None):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description ='Get weather for airports')
-    parser.add_argument('--file','-f', nargs='?')
+    parser.add_argument('--file', '-f', nargs='?')
     args = parser.parse_args()
     if not args.file:
         weather('./airports')

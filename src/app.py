@@ -25,6 +25,7 @@ from flask     import Flask, render_template, request, flash, redirect, send_fil
 # Local imports
 import admin
 import config
+
 from log  import log as logger
 from db import Database
 from colors import Colors
@@ -229,6 +230,7 @@ def update_info():
     """
     global ipadd
     global timestr
+
     with open(f"{PATH}/update_info.txt","r") as file:
         content = file.readlines()
         logger.debug(content)
@@ -267,10 +269,8 @@ def led_map():
     global airports
     global led_map_dict
     global settings
-    global strip
     global num
     global ipadd
-    global strip
     global ipaddresses
     global timestr
     global version
@@ -639,7 +639,6 @@ def hmedit():
 def handle_hmpost_request():
     logger.info("Saving Heat Map Data File")
     global hmdata
-    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -770,7 +769,6 @@ def airports():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -783,8 +781,6 @@ def airports():
     }
 
     return render_template('apedit.html', **templateData)
-
-
 
 
 
@@ -812,7 +808,6 @@ def numap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -832,7 +827,6 @@ def handle_appost_request():
     logger.info("Saving Airport File")
     global airports
     global hmdata
-    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -875,11 +869,6 @@ def ledonoff():
     global ipaddresses
     global timestr
 
-    """
-    for i in range(strip.number):
-        strip.set_pixel_color(i, Color(0,0,0))
-    strip.show_pixels()
-    """
 
     if request.method == "POST":
         readairports(airports_file)
@@ -1001,7 +990,6 @@ def importap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,

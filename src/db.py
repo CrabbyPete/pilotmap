@@ -26,5 +26,13 @@ class Database(redis.Redis):
                 continue
             self.hset(station, key, value)
 
+    def get(self, station ):
+        """
+        Get the values for station or any other key, and return the value or values in a dict
+        :param station:
+        :return:
+        """
+        value = self.hgetall(station)
+
 
 
