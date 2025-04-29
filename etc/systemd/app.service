@@ -1,0 +1,12 @@
+[Unit]
+Description=Web App Service
+
+[Service]
+WorkingDirectory=/usr/local/src
+ExecStart=/home/pi/venv/bin/uwsgi  -i /usr/local/src/uwsgi.ini
+SyslogIdentifier=SRV_APPS
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

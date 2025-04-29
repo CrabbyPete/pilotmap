@@ -1,0 +1,2 @@
+https://github.com/jgarff/rpi_ws281x/issues/483
+https://github.com/jgarff/rpi_ws281x/pull/531/commits/9798a654e9404b303a89e461996f421c43bf1869

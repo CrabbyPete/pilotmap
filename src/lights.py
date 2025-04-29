@@ -1,5 +1,6 @@
 import time
 import arrow
+import signal
 
 from pytz       import timezone, UnknownTimeZoneError
 from suntime    import Sun
@@ -7,29 +8,17 @@ from suntime    import Sun
 from db         import Database
 from log        import log
 from leds       import LedStrip
+from colors     import Colors
 from config     import color, conditions
 from airports   import get_airports
 
 
-rdb = Database(host='127.0.0.1')
+rdb = Database()
+colors = Colors(rdb)
+
 strip = LedStrip(183)
 strip.clear_pixels()
-
-def dim(data,value):
-    red = data[0] - ((value * data[0])/100)
-    if red < 0:
-        red = 0
-
-    grn = data[1] - ((value * data[1])/100)
-    if grn < 0:
-        grn = 0
-
-    blu = data[2] - ((value * data[2])/100)
-    if blu < 0:
-        blu = 0
-
-    data =[red,grn,blu]
-    return data
+strip.show_pixels()
 
 
 def brighten(led:tuple, value:int):
@@ -40,14 +29,17 @@ def brighten(led:tuple, value:int):
     """
     ratio = abs(value)/100.
     if value < 0:
-        red = led[0] - int(led[0] * ratio)
-        red = 0 if red < 0 else red
+        try:
+            red = led[0] - int(led[0] * ratio)
+            red = 0 if red < 0 else red
 
-        green = led[1] - int(led[1] * ratio)
-        green = 0 if green < 0 else green
+            green = led[1] - int(led[1] * ratio)
+            green = 0 if green < 0 else green
 
-        blue = led[2] - int(led[2] * ratio)
-        blue = 0 if blue < 0 else blue
+            blue = led[2] - int(led[2] * ratio)
+            blue = 0 if blue < 0 else blue
+        except Exception as e:
+            log.error(e)
 
     else:
         red = led[0] + int(led[0] * ratio)
@@ -69,8 +61,28 @@ def get_condition(wx_list:list):
                 return condition
 
 
-def led_off(led, number):
-    strip.set_pixel_color(led, color.black)
+time_to_die = False
+
+def signal_handler(signum, frame):
+    global time_to_die
+    log.info(f"Signal:{signum}")
+    time_to_die = True
+
+
+def set_light(led, color_str):
+    if colors.is_off(led):
+        clr = (0,0,0)
+        log.info(f"LED:{led} is off")
+
+    elif isinstance(color_str, str):
+        try:
+            clr = colors.get(color_str)
+        except Exception as e:
+            log.error(f"Error:{e} getting color:{color_str}")
+    else:
+        clr = color_str
+
+    strip.set_pixel_color(led, clr)
     strip.show_pixels()
 
 
@@ -94,55 +106,73 @@ def main(file_name):
 
         if station == "LGND":
             if legend_index == 0:
-                strip.set_pixel_color(led, color.vfr)
-                legend["VFR"] = color.vfr
+                set_light(led, 'vfr')
+                legend["VFR"] = 'vfr'
             elif legend_index == 1:
-                strip.set_pixel_color(led, color.mvfr)
-                legend["MVFR"] = color.mvfr
+                set_light(led, 'mvfr')
+                legend["MVFR"] = 'mvfr'
             elif legend_index == 2:
-                strip.set_pixel_color(led, color.ifr)
-                legend["IFR"] = color.ifr
+                set_light(led, 'ifr')
+                legend["IFR"] = 'ifr'
             elif legend_index == 3:
-                strip.set_pixel_color(led, color.lifr)
-                legend["LIFR"] = color.lifr
+                set_light(led, 'lifr')
+                legend["LIFR"] = 'lifr'
             elif legend_index == 4:
-                strip.set_pixel_color(led, color.nowx)
-                legend["INVALID"] = color.nowx
+                set_light(led, 'nowx')
+                legend["INVALID"] = 'nowx'
                 break
-            #rdb.set_values('lights',)
             legend_index += 1
 
     # Loop forever to light each LED
-    while True:
+    while not time_to_die:
         blink = []
 
         # Check the status of the stations by color
+        legend_index = 0
         for led, station in enumerate(station_ids):
             if station in ("NONE", "NULL", "LGND", ""):
+                if station == 'LGND':
+                    log.info(f"LGND:{legend_index} = led:{led}")
+                    if legend_index == 0:
+                        set_light(led, 'vfr')
+                    elif legend_index == 1:
+                        set_light(led, 'mvfr')
+                    elif legend_index == 2:
+                        set_light(led, 'ifr')
+                    elif legend_index == 3:
+                        set_light(led, 'lifr')
+                    elif legend_index == 4:
+                        set_light(led, 'nowx')
+                    legend_index += 1
                 continue
 
-            station_data = rdb.getall(station)
+            station_data = rdb.hgetall(station)
             flight_category = station_data.get('flight_category')
             if flight_category:
                 led_color = legend[flight_category]
             else:
-                led_color = color.nowx
+                led_color = 'nowx'
 
             wx_string = station_data.get('wx_string')
             if wx_string:
                 wx_condition = get_condition(wx_string.split())
                 led_color = color.dict(wx_condition)
                 blink.append(led)
+                log.info(f"{station} WX:{wx_condition}")
 
             lng = station_data.get('longitude')
             lat = station_data.get('latitude')
             tz = station_data.get('timezone')
+            if isinstance(led_color,str):
+                led_color = colors.get(led_color)
+
             if lat and lng and tz:
                 now = arrow.now(tz)
                 sun = Sun(float(lat),float(lng))
                 try:
                     sun_rise = sun.get_sunrise_time(time_zone=timezone(tz))
                     sun_set  = sun.get_sunset_time(time_zone=timezone(tz))
+
                     if now.datetime > sun_set or now.datetime < sun_rise:
                         led_color = brighten(led_color, -75)
                     else:
@@ -153,26 +183,28 @@ def main(file_name):
             else:
                 led_color = brighten(led_color, -50)
 
-            log.info(f"Light:{led}={led_color}")
-            strip.set_pixel_color(led, led_color)
+            log.info(f"{station} led:{led}={led_color}")
+            set_light(led, led_color)
 
         saved_colors = [strip.get_pixel(led) for led in blink]
 
         sleep = 0
-
         # Don't change any other led for 30 seconds as we check which to blink
-        while True:
+        while not time_to_die:
             strip.show_pixels()
             for index, led in enumerate(blink):
                 if strip.get_pixel(led) == 0:
-                    strip.set_pixel_color(led, saved_colors[index])
+                    set_light(led, saved_colors[index])
                 else:
-                    strip.set_pixel_color(led, 0)
+                    set_light(led, 0)
 
             time.sleep(.5)
             sleep += .5
-            if sleep > 30:
+            if sleep > 10:
                 break
+
+    # You got a signal to die
+    strip.clear_pixels()
 
 
 if __name__ == "__main__":

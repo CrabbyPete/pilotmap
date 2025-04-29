@@ -11,8 +11,9 @@ try:
     import Adafruit_SSD1306
     import RPi.GPIO as GPIO
     from Adafruit_GPIO  import I2C
-except ImportError:
-    pass
+except ImportError as e:
+    log.error(f"Error:{e} import modules")
+
 
 # Load fonts. Install font package --> sudo apt-get install ttf-mscorefonts-installer
 # Also see; https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil for info
@@ -146,7 +147,7 @@ class Display:
         display.image(display_image)
         display.display()
 
-rdb = Database(host='127.0.0.1')
+rdb = Database()
 
 try:
     oleds = Display()
@@ -206,7 +207,7 @@ def main(file_name):
         for station in station_ids:
             if station == "LGND":
                 continue
-            station_data = rdb.getall(station)
+            station_data = rdb.hgetall(station)
 
             wind_gusts = station_data.get('wind_gust_kt')
             wind_dir   = station_data.get('wind_dir_degrees')

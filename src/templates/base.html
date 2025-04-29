@@ -213,8 +213,8 @@ xhttp.send();
           <a class="dropdown-item" href="/confedit">Editor <i class='far fa-edit'></i></a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/index">Load Profile <i class='fas fa-home'></i></a>
-          <a class="dropdown-item {% if enable != 3 %} {{ 'disabled' }} {% endif %}" href="/restoreconf">Restore Settings from File <i class='far fa-window-restore'></i></a>
-          <a class="dropdown-item {% if enable != 3 %} {{ 'disabled' }} {% endif %}" href="javascript:{}" onclick="document.getElementById('post').submit(); return false;">Save Config File <i class='far fa-save'></i></a>
+          <a class="dropdown-item  href="/restoreconf">Restore Settings from File <i class='far fa-window-restore'></i></a>
+          <a class="dropdown-item  href="javascript:{}" onclick="document.getElementById('post').submit(); return false;">Save Config File <i class='far fa-save'></i></a>
         </div>
       </li>
 
@@ -224,8 +224,8 @@ xhttp.send();
           <a class="dropdown-item" href="/apedit">Editor <i class='far fa-edit'></i></a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="https://www.rocketroute.com/airports" target="aplookup">Lookup Airports <i class='fas fa-external-link-alt'></i></a>
-          <a class="dropdown-item {% if enable != 2 %} {{ 'disabled' }} {% endif %}" href="/apedit">Restore Airports from File<i class='far fa-window-restore'></i></a>
-          <a class="dropdown-item {% if enable != 2 %} {{ 'disabled' }} {% endif %}" href="javascript:{}" onclick="document.getElementById('appost').submit(); return false;">Save Airport File <i class='far fa-save'></i></a>
+          <a class="dropdown-item  href="/apedit">Restore Airports from File<i class='far fa-window-restore'></i></a>
+          <a class="dropdown-item  href="javascript:{}" onclick="document.getElementById('appost').submit(); return false;">Save Airport File <i class='far fa-save'></i></a>
         </div>
       </li>
 
@@ -234,7 +234,7 @@ xhttp.send();
         <div class="dropdown-menu">
           <a class="dropdown-item" href="/hmedit">Editor <i class='far fa-edit'></i></a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item {% if enable != 1 %} {{ 'disabled' }} {% endif %}" href="javascript:{}" onclick="document.getElementById('hmpost').submit(); return false;">Save Heat Map File  <i class='far fa-save'></i></a>
+          <a class="dropdown-item  href="javascript:{}" onclick="document.getElementById('hmpost').submit(); return false;">Save Heat Map File  <i class='far fa-save'></i></a>
         </div>
       </li>
 
