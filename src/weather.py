@@ -129,6 +129,7 @@ def weather(file_name=None):
 
         # Store the data you want in to the database
         try:
+            log.info(f"{station}:{station_data['raw_text']}")
             rdb.put(station, station_data)
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} for station {station} in the db")
