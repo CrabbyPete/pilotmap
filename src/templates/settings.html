@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PilotMap - Settings</title>
+
+  <!-- Local CSS -->
+  <link href="{{url_for('static', filename='css/tabler.min.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='css/bootstrap-clockpicker.min.css')}}" rel="stylesheet" />
+  <link href="{{url_for('static', filename='css/dropzone.min.css')}}" rel="stylesheet" />
+
+  <!-- Local JS -->
+  <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/tabler.min.js')}}" defer></script>
+  <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/bootstrap-clockpicker.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/dropzone.min.js')}}"></script>
+
+  <style>
+    body { background: #ffffff; font-family: 'Segoe UI', sans-serif; }
+    .page-content { margin-top: 1rem; }
+    .navbar-nav .nav-link { cursor: pointer; }
+    .content { padding: 20px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .dropzone {
+      border: 2px dashed #17a2b8;
+      border-radius: 8px;
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      margin-top: 30px;
+    }
+    header, footer {
+      width: 100%;
+      background-color: #f8f9fa;
+    }
+    @media (max-width: 768px) {
+      #saveSettingsBtn, #saveSettingsBtnBottom { width: 100%; }
+      .row.mb-3.align-items-center > div { margin-bottom: 10px; }
+    }
+	.form-control-color {
+  width: 70px; /* Adjust width */
+  height: 50px; /* Adjust height */
+  padding: 0;
+  border-radius: 4px; /* Slightly rounded corners */
+  border: 1px solid #ccc; /* Border for better visibility */
+}
+  </style>
+</head>
+
+<body>
+
+<!-- Top Navbar -->
+<header class="navbar navbar-expand-md navbar-light" style="background-color: #f8f9fa;">
+  <div class="container-xl">
+    <a class="navbar-brand" href="index.html">
+      <img src="{{url_for('static', filename='logo_700px.png')}}" alt="PilotMap Logo" style="width: 150px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" onclick="showSection('settings')">Settings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Airports</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Heat Map</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Map Functions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Map Utilities</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- Page Layout -->
+<div class="container-xl page-content">
+
+  <!-- Settings Content -->
+  <div id="settings" class="content active">
+
+    <!-- Sub-Menu for Settings -->
+    <ul class="nav nav-pills mb-4">
+      <li class="nav-item">
+        <a class="nav-link active" onclick="showSubSection('basic')">Basic Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('sectional')">Sectional Map Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('color')">LED Color Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('legend')">Legend Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('lcd')">LCD / OLED / Rotary Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('mos')">MOS / Heat Map Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="showSubSection('wipes')">Transitional Wipes Settings</a>
+      </li>
+    </ul>
+
+    <!-- BASIC SETTINGS Section -->
+    <div id="basic" class="section active">
+      <h2>Basic Settings</h2>
+      <form action="{{url_for('settings')}}" method="post" class="card p-4">
+
+        <!-- Auto Run -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Auto Run on Boot:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="autorun" checked>
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Automatically start PilotMap on system boot.</div>
+        </div>
+
+        <!-- LED Count -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">LED Count:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="ledCount" placeholder="Enter LED count" value="1111">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Total number of LEDs connected.</div>
+        </div>
+
+        <!-- Use Map Legend -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Use Map Legend:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="mapLegend" checked>
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display a color legend on the map.</div>
+        </div>
+
+        <!-- Set Wind Speed -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Set Wind Speed (knt):</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="windSpeed" placeholder="Knots" value="15">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Wind threshold for alerts.</div>
+        </div>
+
+        <!-- Update FAA Weather -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Update FAA Weather (min):</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="faaWeather" placeholder="Minutes" value="15">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Weather data update interval.</div>
+        </div>
+
+        <!-- Age of METAR -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Age of METAR (min):</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="ageMetar" placeholder="Minutes" value="60">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Max allowed METAR age.</div>
+        </div>
+
+        <!-- Default Data Display -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Default Data to Display:</div>
+          <div class="col-12 col-md-3">
+            <select class="form-select" id="defaultData">
+              <option value="METAR" selected>METAR</option>
+              <option value="TAF">TAF</option>
+              <option value="MOS">MOS</option>
+              <option value="HeatMap">Heat Map</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Data type shown at startup.</div>
+        </div>
+
+        <!-- Use On/Off Timer -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Use On/Off Timer:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="useTimer" onchange="toggleTimerFields()">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Enable scheduled ON/OFF times.</div>
+        </div>
+
+        <!-- Timer Fields (Hidden if Timer off) -->
+        <div id="timerFields" style="display:none;">
+
+          <!-- Time Off -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Time Off:</div>
+            <div class="col-12 col-md-3">
+              <div class="input-group clockpicker">
+                <input type="text" class="form-control" id="timeOff" placeholder="Select time">
+              </div>
+            </div>
+            <div class="col-12 col-md-6 text-muted">Time to power off system.</div>
+          </div>
+
+          <!-- Time On -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Time On:</div>
+            <div class="col-12 col-md-3">
+              <div class="input-group clockpicker">
+                <input type="text" class="form-control" id="timeOn" placeholder="Select time">
+              </div>
+            </div>
+            <div class="col-12 col-md-6 text-muted">Time to power system back on.</div>
+          </div>
+
+          <!-- Sleep Interrupt Time -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Sleep Interrupt Time (min):</div>
+            <div class="col-12 col-md-3">
+              <input type="text" class="form-control" id="sleepInterrupt" placeholder="Minutes">
+            </div>
+            <div class="col-12 col-md-6 text-muted">Wake during sleep every X minutes.</div>
+          </div>
+
+          <!-- Display Sleeping Message -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Display "Sleeping" Message:</div>
+            <div class="col-12 col-md-3">
+              <label class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sleepMessage">
+              </label>
+            </div>
+            <div class="col-12 col-md-6 text-muted">Show "Sleeping..." during sleep mode.</div>
+          </div>
+
+        </div>
+
+        <!-- Display Used -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Display Used:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="displayUsed" onchange="toggleDisplayFields()">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Enable screen display (OLED or LCD).</div>
+        </div>
+
+        <!-- Display Fields (Hidden if no display) -->
+        <div id="displayFields" style="display:none;">
+
+          <!-- Display Type Radio Buttons -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Display Type:</div>
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="displayType" id="oledDisplay" value="OLED">
+                <label class="form-check-label" for="oledDisplay">OLED</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="displayType" id="lcdDisplay" value="LCD">
+                <label class="form-check-label" for="lcdDisplay">LCD</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 text-muted">Select OLED or LCD screen.</div>
+          </div>
+
+          <!-- Number of OLED Displays -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Number of OLED Displays:</div>
+            <div class="col-12 col-md-3">
+              <input type="text" class="form-control" id="oledCount" placeholder="Enter number">
+            </div>
+            <div class="col-12 col-md-6 text-muted">If OLED, how many displays connected?</div>
+          </div>
+
+        </div>
+
+        <!-- Logging Level -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Logging Level:</div>
+          <div class="col-12 col-md-6">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="logLevel" value="Debug">
+              <label class="form-check-label">Debug</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="logLevel" value="Info" checked>
+              <label class="form-check-label">Info</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="logLevel" value="Warn">
+              <label class="form-check-label">Warn</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="logLevel" value="Error">
+              <label class="form-check-label">Error</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Buttons -->
+        <div class="mt-4 text-end">
+          <button id="saveSettingsBtnBottom" class="btn btn-primary w-100 w-md-auto">Save All Settings</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Sectional Map Settings Section -->
+    <div id="sectional" class="section">
+      <h2>Sectional Map Settings</h2>
+      <form class="card p-4">
+
+        <!-- Blink LED's for High Winds -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Blink LED's for High Winds:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="blinkHighWinds">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Enable blinking LEDs to indicate high wind conditions.</div>
+        </div>
+
+        <!-- Flash LED's for Lightning -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Flash LED's for Lightning:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flashLightning">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Enable flashing LEDs to indicate lightning activity.</div>
+        </div>
+
+        <!-- Show Weather Reported as Rain -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Show Weather Reported as Rain:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showRain">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display weather conditions reported as rain.</div>
+        </div>
+
+        <!-- Show Weather Reported as Freezing Rain -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Show Weather Reported as Freezing Rain:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showFreezingRain">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display weather conditions reported as freezing rain.</div>
+        </div>
+
+        <!-- Show Weather Reported as Snow -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Show Weather Reported as Snow:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showSnow">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display weather conditions reported as snow.</div>
+        </div>
+
+        <!-- Show Weather Reported as Dust, Sand, or Ash -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Show Weather Reported as Dust, Sand, or Ash:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showDustSandAsh">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display weather conditions reported as dust, sand, or ash.</div>
+        </div>
+
+        <!-- Show Weather Reported as Fog or Haze -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Show Weather Reported as Fog or Haze:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showFogHaze">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Display weather conditions reported as fog or haze.</div>
+        </div>
+
+        <!-- Turn On Home Airport Feature -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Turn On Home Airport Feature:</div>
+          <div class="col-12 col-md-3">
+            <label class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="homeAirportFeature">
+            </label>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Enable the home airport feature for personalized settings.</div>
+        </div>
+
+        <!-- Home Airport Pin -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Home Airport Pin:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="homeAirportPin" placeholder="Enter pin">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Specify the pin for the home airport.</div>
+        </div>
+
+        <!-- Home Airport Type of Change -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Home Airport Type of Change:</div>
+          <div class="col-12 col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="homeAirportChange" value="NoChange" checked>
+              <label class="form-check-label">No Change</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="homeAirportChange" value="VariableColors">
+              <label class="form-check-label">Variable Colors</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="homeAirportChange" value="SolidColor">
+              <label class="form-check-label">Solid Color</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Choose how the home airport is visually represented.</div>
+        </div>
+
+        <!-- Homeport Dimming -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Homeport Dimming:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="homeportDimming" placeholder="Enter dimming value">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Set the dimming level for the home airport display.</div>
+        </div>
+
+        <!-- RGB or GRB LEDs Used -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">RGB or GRB LEDs Used:</div>
+          <div class="col-12 col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="ledType" value="RGB" checked>
+              <label class="form-check-label">RGB</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="ledType" value="GRB">
+              <label class="form-check-label">GRB</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 text-muted">Select the LED configuration used in the setup.</div>
+        </div>
+
+        <!-- Pins to Reverse RGB/GRB -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Pins to Reverse RGB/GRB:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="reversePins" placeholder="Enter pins">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Specify pins to reverse RGB/GRB configuration if needed.</div>
+        </div>
+
+        <!-- Low Brightness -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">Low Brightness:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="lowBrightness" placeholder="Enter low brightness value">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Set the low brightness level for LEDs.</div>
+        </div>
+
+        <!-- High Brightness -->
+        <div class="row mb-3 align-items-center">
+          <div class="col-12 col-md-3 fw-bold">High Brightness:</div>
+          <div class="col-12 col-md-3">
+            <input type="text" class="form-control" id="highBrightness" placeholder="Enter high brightness value">
+          </div>
+          <div class="col-12 col-md-6 text-muted">Set the high brightness level for LEDs.</div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-4 text-end">
+          <button class="btn btn-primary w-100 w-md-auto">Save Sectional Map Settings</button>
+        </div>
+
+      </form>
+    </div>
+<!-- LED Color Settings Section -->
+<div id="color" class="section">
+  <h2>LED Color Settings</h2>
+  <form class="card p-4">
+
+    <!-- VFR Flight Category -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">VFR Flight Category:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="vfrColor" value="#00ff00" title="Choose VFR color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">VFR is designated by GREEN (0,255,0).</div>
+    </div>
+
+    <!-- MVFR Flight Category -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">MVFR Flight Category:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="mvfrColor" value="#0000ff" title="Choose MVFR color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">MVFR is designated by BLUE (0,0,255).</div>
+    </div>
+
+    <!-- IFR Flight Category -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">IFR Flight Category:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="ifrColor" value="#ff0000" title="Choose IFR color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">IFR is designated by RED (255,0,0).</div>
+    </div>
+
+    <!-- LIFR Flight Category -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">LIFR Flight Category:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="lifrColor" value="#ff00ff" title="Choose LIFR color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">LIFR is designated by Magenta (255,0,255).</div>
+    </div>
+
+    <!-- No Weather Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">No Weather Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="nowxColor" value="#505050" title="Choose No Weather color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">No Weather is typically designated by GRAY (80,80,80) or BLACK (0,0,0).</div>
+    </div>
+
+    <!-- Black/Off -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Black/Off:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="blackOffColor" value="#000000" title="Choose Black/Off color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Black/Off is designated by BLACK (0,0,0).</div>
+    </div>
+
+    <!-- Lightning -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Lightning:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="lightningColor" value="#ffff00" title="Choose Lightning color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Lightning is typically designated by YELLOW (255,255,0).</div>
+    </div>
+
+    <!-- Snow1 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Snow1 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="snow1Color" value="#ffffff" title="Choose Snow1 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Snow1 Reported is typically designated by WHITE (255,255,255).</div>
+    </div>
+
+    <!-- Snow2 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Snow2 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="snow2Color" value="#646464" title="Choose Snow2 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Snow2 Reported is typically designated by SILVER (100,100,100).</div>
+    </div>
+
+    <!-- Rain1 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Rain1 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="rain1Color" value="#040036" title="Choose Rain1 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Rain1 Reported is typically designated by DARK BLUE (4,0,54).</div>
+    </div>
+
+    <!-- Rain2 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Rain2 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="rain2Color" value="#0000ff" title="Choose Rain2 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Rain2 Reported is typically designated by BLUE (0,0,255).</div>
+    </div>
+
+    <!-- Freezing Rain1 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Freezing Rain1 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="freezingRain1Color" value="#c79cdb" title="Choose Freezing Rain1 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Freezing Rain1 Reported is typically designated by LIGHT PURPLE (199,156,219).</div>
+    </div>
+
+    <!-- Freezing Rain2 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Freezing Rain2 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="freezingRain2Color" value="#9800c7" title="Choose Freezing Rain2 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Freezing Rain2 Reported is typically designated by PURPLE (152,0,199).</div>
+    </div>
+
+    <!-- Dust, Sand, Ash1 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Dust, Sand, Ash1 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="dustSandAsh1Color" value="#c8967d" title="Choose Dust, Sand, Ash1 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Dust, Sand or Ash1 Reported is typically designated by BROWN (200,150,125).</div>
+    </div>
+
+    <!-- Dust, Sand, Ash2 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Dust, Sand, Ash2 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="dustSandAsh2Color" value="#643200" title="Choose Dust, Sand, Ash2 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Dust, Sand or Ash2 Reported is typically designated by DARK BROWN (100,50,0).</div>
+    </div>
+
+    <!-- Fog1 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fog1 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="fog1Color" value="#505050" title="Choose Fog1 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Fog1 Reported is typically designated by SILVER (80,80,80).</div>
+    </div>
+
+    <!-- Fog2 Reported -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fog2 Reported:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="fog2Color" value="#505050" title="Choose Fog2 color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Fog2 Reported is typically designated by SILVER (80,80,80).</div>
+    </div>
+
+    <!-- Home Airport Marker Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Home Airport Marker Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="homeAirportMarkerColor" value="#ff0000" title="Choose Home Airport Marker color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Home Airport Marker Color can be any color that stands out.</div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary w-100 w-md-auto">Save LED Color Settings</button>
+    </div>
+
+  </form>
+</div>
+    
+	<!-- Legend Settings Section -->
+<div id="legend" class="section">
+  <h2>Legend Settings</h2>
+  <form class="card p-4">
+
+    <!-- Add High Winds to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add High Winds to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="highWindsLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, High Winds legend will be displayed.</div>
+    </div>
+
+    <!-- Add Lightning to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Lightning to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="lightningLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Lightning legend will be displayed.</div>
+    </div>
+
+    <!-- Add Snow to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Snow to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="snowLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Snow legend will be displayed.</div>
+    </div>
+
+    <!-- Add Rain to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Rain to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="rainLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Rain legend will be displayed.</div>
+    </div>
+
+    <!-- Add Freezing Rain to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Freezing Rain to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="freezingRainLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Freezing Rain legend will be displayed.</div>
+    </div>
+
+    <!-- Add Dust, Sand or Ash to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Dust, Sand or Ash to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="dustSandAshLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Dust, Sand or Ash legend will be displayed.</div>
+    </div>
+
+    <!-- Add Fog or Haze to Legend -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Add Fog or Haze to Legend:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="fogHazeLegend">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">With this enabled, Fog or Haze legend will be displayed.</div>
+    </div>
+
+    <!-- Pin '#' for VFR Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for VFR Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="vfrPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for VFR Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for MVFR Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for MVFR Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="mvfrPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for MVFR Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for IFR Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for IFR Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="ifrPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for IFR Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for LIFR Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for LIFR Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="lifrPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for LIFR Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for No Weather (nowx) Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for No Weather (nowx) Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="nowxPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for No Weather Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Hi Winds Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Hi Winds Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="hiWindsPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for High Winds Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Lightning Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Lightning Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="lightningPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Thunderstorms Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Snow Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Snow Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="snowPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Snow Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Rain Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Rain Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="rainPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Rain Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Freezing Rain Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Freezing Rain Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="freezingRainPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Freezing Rain Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Dust, Sand or Ash Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Dust, Sand or Ash Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="dustSandAshPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Dust, Sand Ash Legend LED.</div>
+    </div>
+
+    <!-- Pin '#' for Fog Legend LED -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Pin '#' for Fog Legend LED:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="fogPin" placeholder="Enter pin number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set LED pin number for Fog Legend LED.</div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary w-100 w-md-auto">Save Legend Settings</button>
+    </div>
+
+  </form>
+</div>
+<!-- LCD / OLED / Rotary Settings Section -->
+<div id="lcd" class="section">
+  <h2>LCD / OLED / Rotary Settings</h2>
+  <form class="card p-4">
+
+    <!-- Number of Airports to Display -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Number of Airports to Display:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="numAirports" placeholder="Enter number">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Number of highest-wind airports to display. 5 to 10 is good.</div>
+    </div>
+
+    <!-- Display an Exclusive Group of Airports -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Display an Exclusive Group of Airports:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="exclusiveAirports">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, only airports listed in the next setting will be displayed.</div>
+    </div>
+
+    <!-- List of Exclusive Airports to Display -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">List of Exclusive Airports to Display:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="exclusiveAirportsList" placeholder="['KFLG', 'KBOS']">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Subset list of airports to display on the OLED's.</div>
+    </div>
+
+    <!-- Display Only Above kts -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Display Only Above kts:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="displayAboveKts">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, only airports with winds above set speed will be displayed.</div>
+    </div>
+
+    <!-- LCD Display Pause -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">LCD Display Pause:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" step="0.1" class="form-control" id="lcdPause" placeholder="0.3 to 1.0">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Pause between character movements in scroll for LCD only.</div>
+    </div>
+
+    <!-- Rotate OLED Display 180 Degrees -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Rotate OLED Display 180 Degrees:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="rotateOLED">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set to 'Yes' if OLEDs are mounted upside down.</div>
+    </div>
+
+    <!-- Reverse OLED's Position Order -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Reverse OLED's Position Order:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="reverseOLED">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set to 'Yes' if OLEDs are wired backwards.</div>
+    </div>
+
+    <!-- OLED Display Pause -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Display Pause:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" step="0.1" class="form-control" id="oledPause" placeholder="1.0 to 2.0">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Pause between character movements in scroll for OLED only.</div>
+    </div>
+
+    <!-- OLED Font Size -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Font Size:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="oledFontSize" placeholder="Enter font size">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Size of font for OLED display. 24 works well.</div>
+    </div>
+
+    <!-- OLED Pixel Offset -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Pixel Offset:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="oledPixelOffset" placeholder="Enter offset">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Pixel offset for OLED text display vertically.</div>
+    </div>
+
+    <!-- OLED Display Wind Direction as Numbers or Arrow -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Display Wind Direction as:</div>
+      <div class="col-12 col-md-3">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="windDisplay" value="Numbers" checked>
+          <label class="form-check-label">Numbers</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="windDisplay" value="Arrow">
+          <label class="form-check-label">Arrow</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Choose how to display wind direction and speed.</div>
+    </div>
+
+    <!-- OLED Bold Highest Speed Airport -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Bold Highest Speed Airport:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="boldHighestSpeed">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, Bold the text for the airport with the highest windspeed.</div>
+    </div>
+
+    <!-- OLED Add Blank Screen -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Add Blank Screen:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="addBlankScreen">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, Add a blank screen between the group of airports.</div>
+    </div>
+
+    <!-- OLED Display Border -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Display Border:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="displayBorder">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, draw a border around the text on the display.</div>
+    </div>
+
+    <!-- OLED Level Of Dimming -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Level Of Dimming:</div>
+      <div class="col-12 col-md-3">
+        <select class="form-select" id="oledDimming">
+          <option value="Full Bright">Full Bright</option>
+          <option value="Medium Bright">Medium Bright</option>
+          <option value="Low Bright">Low Bright</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Sets brightness of OLED displays if IC238 Ambient Light Sensor is NOT used.</div>
+    </div>
+
+    <!-- OLED Minimum Brightness -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Minimum Brightness:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="oledMinBrightness" placeholder="0-255">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set value 0-255 for the minimum brightness.</div>
+    </div>
+
+    <!-- OLED Maximum Brightness -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Maximum Brightness:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="oledMaxBrightness" placeholder="0-255">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Set value 0-255 for the maximum brightness.</div>
+    </div>
+
+    <!-- OLED Invert Display -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Invert Display:</div>
+      <div class="col-12 col-md-3">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="invertDisplay" value="Normal Display" checked>
+          <label class="form-check-label">Normal Display</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="invertDisplay" value="Inverted Display">
+          <label class="form-check-label">Inverted Display</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Normal Display is white text on black background.</div>
+    </div>
+
+    <!-- OLED Toggle Inverted Display -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Toggle Inverted Display:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="toggleInvertedDisplay">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, Toggle Inverted display between groups of airports.</div>
+    </div>
+
+    <!-- OLED Scroll Display Direction -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Scroll Display Direction:</div>
+      <div class="col-12 col-md-3">
+        <select class="form-select" id="scrollDirection">
+          <option value="Scroll Right">Scroll Right</option>
+          <option value="Scroll Left">Scroll Left</option>
+          <option value="No Scroll">No Scroll</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Used on multiple OLEDs display only.</div>
+    </div>
+
+    <!-- OLED Display Welcome Message -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Display Welcome Message:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="displayWelcomeMessage">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, display a welcome message.</div>
+    </div>
+
+    <!-- OLED Welcome Message -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Welcome Message:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="welcomeMessage" placeholder='"Welcome Message"'>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Must be in quotes. Use '\n' for line breaks.</div>
+    </div>
+
+    <!-- OLED Display Local/Zulu Time -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">OLED Display Local/Zulu Time:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="displayLocalZuluTime">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, Display the local and Zulu Time.</div>
+    </div>
+
+    <!-- Display IP Address -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Display IP Address:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="displayIPAddress">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">If Yes, Display the Raspberry Pi's IP address.</div>
+    </div>
+
+    <!-- Rotary Switch Positions -->
+    <h3 class="mt-4">Rotary Switch Positions</h3>
+    <div class="row mb-3 align-items-center">
+      <div class="col-12">
+        <p class="text-muted">Set data to display and hours ahead for each rotary switch position.</p>
+      </div>
+    </div>
+
+    <!-- Loop through positions 0 to 11 -->
+    <script>
+      for (let i = 0; i <= 11; i++) {
+        document.write(`
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Rotary Switch Position ${i}:</div>
+            <div class="col-12 col-md-3">
+              <select class="form-select" id="rotaryPosition${i}Data">
+                <option value="None">None</option>
+                <option value="METAR">METAR</option>
+                <option value="TAF">TAF</option>
+                <option value="MOS">MOS</option>
+                <option value="Heat Map">Heat Map</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6 text-muted">Choose data to display for position ${i}.</div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-3 fw-bold">Enter Hours Ahead:</div>
+            <div class="col-12 col-md-3">
+              <input type="number" class="form-control" id="rotaryPosition${i}Hours" placeholder="1 to 24">
+            </div>
+            <div class="col-12 col-md-6 text-muted">Hours ahead for TAF/MOS data at position ${i}.</div>
+          </div>
+        `);
+      }
+    </script>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary w-100 w-md-auto">Save LCD / OLED / Rotary Settings</button>
+    </div>
+
+  </form>
+</div>	
+<!-- Heat Map Settings Section -->
+<div id="mos" class="section">
+  <h2>Heat Map Settings</h2>
+  <form class="card p-4">
+
+    <!-- Probability to Display MOS Data -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Probability to Display MOS Data:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="mosProbability" placeholder="Enter probability %" min="0" max="100">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Probability in % that a particular reported weather will occur at the airport.</div>
+    </div>
+
+    <!-- Display Binary or Gradient Colors -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Display Binary or Gradient Colors:</div>
+      <div class="col-12 col-md-3">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="colorDisplay" value="Binary" checked>
+          <label class="form-check-label">Binary</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="colorDisplay" value="Gradient">
+          <label class="form-check-label">Gradient</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Displays which airports have been landed at.</div>
+    </div>
+
+    <!-- Use Green to denote Home Airport -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Use Green to denote Home Airport:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="greenHomeAirport">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Using Green to denote home airport will make it stand out.</div>
+    </div>
+
+    <!-- Fade the Home Airport In/Out -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fade the Home Airport In/Out:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="fadeHomeAirport">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">This setting will fade the Green of the home airport in and out.</div>
+    </div>
+
+    <!-- Fade In/Out Delay Time -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fade In/Out Delay Time:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="fadeDelay" placeholder="0 - 3" step="0.001" min="0" max="3">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Delay time to change how slowly the home airport LED fades in and out.</div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary w-100 w-md-auto">Save Heat Map Settings</button>
+    </div>
+
+  </form>
+</div>	
+<!-- Transitional Wipes Settings Section -->
+<div id="wipes" class="section">
+  <h2>Transitional Wipes Settings</h2>
+  <form class="card p-4">
+
+    <!-- Use Transitional Wipes During FAA Data Updates -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Use Transitional Wipes During FAA Data Updates:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="useWipes">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enable or disable transitions during FAA data updates.</div>
+    </div>
+
+    <!-- Use Random Colors -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Use Random Colors:</div>
+      <div class="col-12 col-md-3">
+        <label class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="randomColors">
+        </label>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Let the system randomly generate colors during transitions.</div>
+    </div>
+
+    <!-- Time Delay -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Time Delay:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="timeDelay" placeholder="0 - .5" step="0.001" min="0" max="0.5">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Adjust the speed of the transition.</div>
+    </div>
+
+    <!-- Rainbow Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Rainbow Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="rainbowIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Rainbow Transition.</div>
+    </div>
+
+    <!-- Fade In/Out Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fade In/Out Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="fadeIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Fade In/Out Transition.</div>
+    </div>
+
+    <!-- Fade In Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Fade In Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="fadeInColor" value="#ffffff" title="Choose Fade In color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color when the LED is the brightest.</div>
+    </div>
+
+    <!-- All On/Off Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">All On/Off Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="allOnOffIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for All On/Off Transition.</div>
+    </div>
+
+    <!-- On Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">On Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="onColor" value="#ffffff" title="Choose On color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color of LEDs when all on.</div>
+    </div>
+
+    <!-- Off Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Off Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="offColor" value="#000000" title="Choose Off color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color of LEDs when all off.</div>
+    </div>
+
+    <!-- Shuffle Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Shuffle Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="shuffleIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Shuffle Transition.</div>
+    </div>
+
+    <!-- Shuffle On Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Shuffle On Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="shuffleOnColor" value="#ffffff" title="Choose Shuffle On color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color when the LED is the brightest.</div>
+    </div>
+
+    <!-- Shuffle Off Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Shuffle Off Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="shuffleOffColor" value="#000000" title="Choose Shuffle Off color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color when LED is at the dimmest.</div>
+    </div>
+
+    <!-- Radar Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Radar Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="radarIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Radar Transition.</div>
+    </div>
+
+    <!-- Radar Background Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Radar Background Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="radarBgColor" value="#000000" title="Choose Radar Background color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color representing the Radar's background.</div>
+    </div>
+
+    <!-- Radar Sweep Arm Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Radar Sweep Arm Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="radarSweepColor" value="#ffffff" title="Choose Radar Sweep Arm color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color representing the Radar's Sweep Arm.</div>
+    </div>
+
+    <!-- Circle Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Circle Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="circleIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Circle Transition.</div>
+    </div>
+
+    <!-- Circle Inside Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Circle Inside Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="circleInsideColor" value="#ffffff" title="Choose Circle Inside color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color to fill in the circle as it expands.</div>
+    </div>
+
+    <!-- Circle Outside Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Circle Outside Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="circleOutsideColor" value="#000000" title="Choose Circle Outside color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color to fill outside of the circle.</div>
+    </div>
+
+    <!-- Square Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Square Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="squareIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Square Transition.</div>
+    </div>
+
+    <!-- Square Inside Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Square Inside Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="squareInsideColor" value="#ffffff" title="Choose Square Inside color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color to fill in the square as it's expanding.</div>
+    </div>
+
+    <!-- Square Outside Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Square Outside Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="squareOutsideColor" value="#000000" title="Choose Square Outside color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color to fill the outside of the square.</div>
+    </div>
+
+    <!-- Up/Down Side to Side Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Up/Down Side to Side Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="upDownIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Up/Down Side to Side Transition.</div>
+    </div>
+
+    <!-- Sweep Line Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Sweep Line Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="sweepLineColor" value="#ffffff" title="Choose Sweep Line color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color representing the sweep line.</div>
+    </div>
+
+    <!-- Background Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Background Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="backgroundColor" value="#000000" title="Choose Background color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Background color. Should be high contrast to the sweep line color.</div>
+    </div>
+
+    <!-- Morse Code Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Morse Code Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="morseIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Morse Code Transition.</div>
+    </div>
+
+    <!-- Message to Display as Morse Code -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Message to Display as Morse Code:</div>
+      <div class="col-12 col-md-3">
+        <input type="text" class="form-control" id="morseMessage" placeholder='"Message"'>
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter message to display via Morse Code. Use quotes.</div>
+    </div>
+
+    <!-- Morse Code On Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Morse Code On Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="morseOnColor" value="#ffffff" title="Choose Morse Code On color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Morse Code color when LED is on.</div>
+    </div>
+
+    <!-- Morse Code Off Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Morse Code Off Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="morseOffColor" value="#000000" title="Choose Morse Code Off color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Morse Code color when LED is off.</div>
+    </div>
+
+    <!-- Chase the Rabbit Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Chase the Rabbit Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="chaseIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Chase the Rabbit Transition.</div>
+    </div>
+
+    <!-- Chaser Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Chaser Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="chaserColor" value="#ffffff" title="Choose Chaser color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color that follows the Rabbit.</div>
+    </div>
+
+    <!-- Rabbit Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Rabbit Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="rabbitColor" value="#ff0000" title="Choose Rabbit color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Color of the Rabbit. Should be high contrast to Chasers.</div>
+    </div>
+
+    <!-- Checker Board Transition -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Checker Board Transition:</div>
+      <div class="col-12 col-md-3">
+        <input type="number" class="form-control" id="checkerIterations" placeholder="0 - 10" min="0" max="10">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Enter number of iterations for Checker Board Transition.</div>
+    </div>
+
+    <!-- Main Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Main Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="mainColor" value="#ffffff" title="Choose Main color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Main Color to fill box.</div>
+    </div>
+
+    <!-- Secondary Color -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-12 col-md-3 fw-bold">Secondary Color:</div>
+      <div class="col-12 col-md-3">
+        <input type="color" class="form-control form-control-color" id="secondaryColor" value="#000000" title="Choose Secondary color">
+      </div>
+      <div class="col-12 col-md-6 text-muted">Secondary Color. Should be high contrast to the main color.</div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary w-100 w-md-auto">Save Transitional Wipes Settings</button>
+    </div>
+
+  </form>
+</div>
+    
+    
+
+  </div> <!-- end content -->
+</div> <!-- end container -->
+
+<!-- Footer -->
+<footer class="bg-light text-center text-lg-start mt-5">
+  <div class="container-xl p-4">
+    <p class="text-muted">This is a placeholder footer text. You can update this with your own content later.</p>
+    <p class="text-muted">This website uses Tabler, licensed under the MIT License.</p>
+  </div>
+</footer>
+
+<!-- JS Functions -->
+<script>
+function showSection(id) {
+  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showSubSection(id) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  // Update active class for submenu items
+  document.querySelectorAll('.nav-pills .nav-link').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.nav-pills .nav-link[onclick="showSubSection('${id}')"]`).classList.add('active');
+}
+
+function toggleTimerFields() {
+  document.getElementById('timerFields').style.display = document.getElementById('useTimer')?.checked ? 'block' : 'none';
+}
+
+function toggleDisplayFields() {
+  document.getElementById('displayFields').style.display = document.getElementById('displayUsed')?.checked ? 'block' : 'none';
+}
+
+$(document).ready(function(){
+  $('.clockpicker input').clockpicker({
+    autoclose: true,
+    twelvehour: false,
+    donetext: 'Done'
+  });
+
+  Dropzone.options.uploadSettingsDropzone = {
+    url: "/", 
+    autoProcessQueue: false,
+    acceptedFiles: ".json",
+    init: function() {
+      this.on("addedfile", function(file) {
+        console.log("File uploaded:", file.name);
+      });
+    }
+  };
+});
+</script>
+
+</body>
+</html>
