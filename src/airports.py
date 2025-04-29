@@ -7,7 +7,7 @@ from db import Database
 db = Database()
 
 
-def get_apinfo(airports=None):
+def get_airport_info(airports=None):
     """
     Create a dict of airport information
     :param airports:
@@ -22,7 +22,7 @@ def get_apinfo(airports=None):
         if airport in ("NULL", "LGND", ""):
             continue
         try:
-            name = db.get(airport, 'name').split(',')
+            name = db.hget(airport, 'name').split(',')
             info[airport] = [name[0], name[1]]
         except Exception as e:
             log.error(f"Error:{e} for {airport}")

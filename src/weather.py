@@ -82,7 +82,7 @@ def get_station(station):
         return metars
 
 
-def main(file_name=None):
+def weather(file_name=None):
     """
     Main routine. Schedule to run every 5 minutes
     :param: file_name: str: airport file
@@ -97,7 +97,7 @@ def main(file_name=None):
     # Get the latest METAR data from the API
     metar_data = get_metars()
 
-    # Set the LEDs for each value
+    # Ignore Legend values
     for led, station in enumerate(station_ids):
         if station in ("NULL", "LGND", ""):
             continue
@@ -129,16 +129,18 @@ def main(file_name=None):
 
         # Store the data you want in to the database
         try:
+            log.info(f"{station}:{station_data['raw_text']}")
             rdb.put(station, station_data)
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} for station {station} in the db")
 
         try:
-            rdb.geo_add('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
+            rdb.geoadd('stations', (station_data.get('longitude'), station_data.get('latitude'), station))
         except Exception as e:
             log.error(f"Error:{e} putting {station_data} geodata for station {station} in the db")
 
     log.info(f"Ending at {arrow.now()}")
+
 
 if __name__ == "__main__":
     import argparse
@@ -146,6 +148,6 @@ if __name__ == "__main__":
     parser.add_argument('--file','-f', nargs='?')
     args = parser.parse_args()
     if not args.file:
-        main('src/airports')
+        weather('./airports')
     else:
-        main(args.file)
+        weather(args.file)

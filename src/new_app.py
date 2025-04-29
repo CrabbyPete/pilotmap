@@ -5,7 +5,7 @@ from flask import Flask, Response, request, render_template, redirect
 from db         import Database
 from log        import log
 from config     import color
-from airports   import get_apinfo
+
 
 rdb = Database(host='127.0.0.1')
 

@@ -5,6 +5,7 @@ import json
 import time
 import socket
 import shutil
+import logging
 import zipfile
 import requests
 import subprocess
@@ -24,10 +25,28 @@ from flask     import Flask, render_template, request, flash, redirect, send_fil
 # Local imports
 import admin
 import config
-
-#import scan_network
 from log  import log as logger
-#from leds import LedStrip, Color
+from db import Database
+from colors import Colors
+from airports import get_airport_info
+from weather import weather
+
+LED_OFF = True
+LED_ON  = False
+
+rdb = Database('192.168.1.163')
+color = Colors(rdb)
+
+"""
+from leds import LedStrip
+
+try:
+    from leds import Color
+except ImportError as e:
+    def Color(r,g,b):
+        return r,g,b
+"""
+
 
 PATH = '.'
 airports_file  = f'{PATH}/airports'
@@ -81,35 +100,8 @@ num = 0                         # initialize num for airports editor
 ipadd = ''
 
 
-class FakeLedStrip:
-    def __init__(self, *args):
-        self.strip = []
-        self.number = 100
+#strip = LedStrip(config.LED_COUNT)
 
-    def set_pixel_color(self, led, color):
-        return
-
-    def clear_pixels(self):
-        return
-
-    def show_pixels(self):
-        return
-
-    def set_brightness(self, brightness):
-        return
-
-    def rainbow(self, times,delay):
-        return
-
-    def fill(self, color):
-        return
-
-
-# They have the templates calling these function, so I faked them for now
-def Color(c):
-    return c
-
-strip = FakeLedStrip()
 
 # Initiate flash session
 app = Flask(__name__)
@@ -278,6 +270,7 @@ def led_map():
     global strip
     global num
     global ipadd
+    global strip
     global ipaddresses
     global timestr
     global version
@@ -547,6 +540,7 @@ def index ():
     global hmdata
     global airports
     global settings
+    global strip
     global num
     global ipadd
     global strip
@@ -562,7 +556,7 @@ def index ():
         'airports': airports,
         'settings': settings,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'num': num,
         'apinfo_dict': apinfo_dict,
@@ -613,7 +607,7 @@ def downloadhm ():
 @app.route("/hmedit", methods=["GET", "POST"])
 def hmedit():
     logger.info("Opening hmedit.html")
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -627,7 +621,7 @@ def hmedit():
         'title': 'Heat Map Editor-'+version,
         'hmdata': hmdata,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -645,7 +639,7 @@ def hmedit():
 def handle_hmpost_request():
     logger.info("Saving Heat Map Data File")
     global hmdata
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -704,7 +698,7 @@ def importhm():
         'title': 'Heat Map Editor-'+version,
         'hmdata': hmdata,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -717,7 +711,7 @@ def importhm():
     flash('Heat Map Imported - Click "Save Heat Map File" to save')
     return render_template("hmedit.html", **templateData)
 
-
+"""
 # Routes for Airport Editor
 @app.route("/apedit", methods=["GET", "POST"])
 def apedit():
@@ -733,12 +727,50 @@ def apedit():
     readairports(airports_file)  # Read airports file.
 
     logger.debug(ipadd)  # debug to display ip address on console
-
     templateData = {
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
+        'ipaddresses': ipaddresses,
+        'timestr': timestr,
+        'num': num,
+        'current_timezone': current_timezone,
+        'update_available': update_available,
+        'update_vers': update_vers,
+        'apinfo_dict': get_airport_info(), # PJD apinfo_dict,
+        'machines': machines,
+        'map_name':map_name
+    }
+    return render_template('apedit.html', **templateData)
+"""
+@app.route('/apedit', methods=["GET", "POST"])
+def airports():
+    """
+    Airports Editor
+    :return:
+    """
+    if request.method == "GET":
+        with open('airports', 'r') as fyle:
+            airports = [line.strip().replace('\n','') for line  in fyle.readlines()]
+    elif request.method == "POST":
+        airports = request.form.to_dict().values()
+        with open('airports', 'w') as fyle:
+            for airport in airports:
+                fyle.write(f"{airport}\r\n")
+
+        command = "sudo systemctl start weather"
+        ok = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        command = "sudo systemctl restart lights"
+        ok = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    apinfo_dict = get_airport_info(airports)
+    templateData = {
+        'title': 'Airports Editor-'+version,
+        'airports': airports,
+        'ipadd': ipadd,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -749,7 +781,11 @@ def apedit():
         'machines': machines,
         'map_name':map_name
     }
+
     return render_template('apedit.html', **templateData)
+
+
+
 
 
 @app.route("/numap", methods=["GET", "POST"])
@@ -776,7 +812,7 @@ def numap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -796,7 +832,7 @@ def handle_appost_request():
     logger.info("Saving Airport File")
     global airports
     global hmdata
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
@@ -833,59 +869,63 @@ def handle_appost_request():
 def ledonoff():
     logger.info("Controlling LED's on/off")
     global airports
-    global strip
+    #global strip
     global num
     global ipadd
     global ipaddresses
     global timestr
 
-
-    for i in range(strip.number()):
+    """
+    for i in range(strip.number):
         strip.set_pixel_color(i, Color(0,0,0))
     strip.show_pixels()
+    """
 
     if request.method == "POST":
-
         readairports(airports_file)
 
         if "buton" in request.form:
             num = int(request.form['lednum'])
             logger.info("LED " + str(num) + " On")
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            color.switch_led(num,LED_ON)
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' On')
 
         elif "butoff" in request.form:
             num = int(request.form['lednum'])
             logger.info("LED " + str(num) + " Off")
-            strip.set_pixel_color(num, Color(0,0,0))
-            strip.show_pixels()
+            color.switch_led(num, LED_OFF)
+            #strip.set_pixel_color(num, Color(0,0,0))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' Off')
 
         elif "butup" in request.form:
             logger.info("LED UP")
             num = int(request.form['lednum'])
-            strip.set_pixel_color(num, Color(0,0,0))
+            #strip.set_pixel_color(num, Color(0,0,0))
             num = num + 1
 
             if num > len(airports):
                 num = len(airports)
 
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' should be On')
 
         elif "butdown" in request.form:
             logger.info("LED DOWN")
             num = int(request.form['lednum'])
-            strip.set_pixel_color(num, Color(0,0,0))
+            color.switch_led(num, LED_OFF)
+            #strip.set_pixel_color(num, Color(0,0,0))
 
             num = num - 1
             if num < 0:
                 num = 0
 
-            strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+            color.switch_led(num, LED_ON)
+            #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('LED ' + str(num) + ' should be On')
 
         elif "butall" in request.form:
@@ -893,10 +933,10 @@ def ledonoff():
             num = int(request.form['lednum'])
 
             for num in range(len(airports)):
-                strip.set_pixel_color(num, Color(155,155,155))
-            strip.show_pixels()
+                color.switch_led(num, LED_ON)
+                #strip.set_pixel_color(num, Color(155,155,155))
+            #strip.show_pixels()
             flash('All LEDs should be On')
-
             num=0
 
         elif "butnone" in request.form:
@@ -904,10 +944,10 @@ def ledonoff():
             num = int(request.form['lednum'])
 
             for num in range(len(airports)):
-                strip.set_pixel_color(num, Color(0,0,0))
-            strip.show_pixels()
+                color.switch_led(num, LED_OFF)
+                #strip.set_pixel_color(num, Color(0,0,0))
+            #strip.show_pixels()
             flash('All LEDs should be Off')
-
             num=0
 
         else:  # if tab is pressed
@@ -919,7 +959,7 @@ def ledonoff():
         'title': 'Airports File Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -961,7 +1001,7 @@ def importap():
         'title': 'Airports Editor-'+version,
         'airports': airports,
         'ipadd': ipadd,
-        'strip': strip,
+        #'strip': strip,
         'ipaddresses': ipaddresses,
         'timestr': timestr,
         'num': num,
@@ -1625,6 +1665,7 @@ def get_led_map_info():
     min_lon = min(lon_list)
 
 # routine to capture airport information and pass along to web pages.
+
 def get_apinfo():
     logger.debug('In Get_Apinfo Routine')
 

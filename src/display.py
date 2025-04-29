@@ -147,7 +147,7 @@ class Display:
         display.image(display_image)
         display.display()
 
-rdb = Database(host='127.0.0.1')
+rdb = Database()
 
 try:
     oleds = Display()
@@ -207,7 +207,7 @@ def main(file_name):
         for station in station_ids:
             if station == "LGND":
                 continue
-            station_data = rdb.getall(station)
+            station_data = rdb.hgetall(station)
 
             wind_gusts = station_data.get('wind_gust_kt')
             wind_dir   = station_data.get('wind_dir_degrees')

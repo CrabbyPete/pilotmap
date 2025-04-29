@@ -1,6 +1,7 @@
 #config.py - use web based configurator to make changes unless you are comfortable doing it manually
+
 autorun = 1
-LED_COUNT = 183
+LED_COUNT = 180
 legend = 1
 max_wind_speed = 15
 update_interval = 15
@@ -72,7 +73,7 @@ leg_pin_rain = 0
 leg_pin_frrain = 0
 leg_pin_dustsandash = 0
 leg_pin_fog = 0
-num2display = 10
+num2display = 8
 exclusive_flag = 1
 exclusive_list = ['KFLG', 'KPRC', 'KIGM', 'KONT',  'KPHX', 'KTUS']
 abovekts = 0

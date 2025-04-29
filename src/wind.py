@@ -18,17 +18,15 @@ def main(file_name):
         for station in station_ids:
             if station == "LGND":
                 continue
-            station_data = rdb.getall(station)
+            station_data = rdb.hgetall(station)
             wind_speed = int(station_data.get('wind_speed_kt', 0))
-            print(f"{station} {station_data.get('wx_string')}")
             wind_gusts = station_data.get('wind_gust_kt', 0)
             wind_dir   = station_data.get('wind_dir_degrees')
             winds.append({'station': station, 'speed': wind_speed, 'gusts': wind_gusts, 'direction': wind_dir})
 
         winds = sorted(winds, key=lambda x: x['speed'], reverse=True)
         for number, wind in enumerate(winds):
-            pass
-            # print(wind)
+            print(wind)
 
         time.sleep(60)
 
